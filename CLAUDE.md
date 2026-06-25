@@ -89,20 +89,43 @@ src/
     ├── core/audio.service.ts   prononciation : TTS natif (Capacitor) | Web Speech (navigateur)
     ├── data/
     │   ├── numbers.data.ts      1..20 + mot anglais
-    │   └── colors.data.ts       11 couleurs (name EN, fr, hex)
+    │   ├── colors.data.ts       11 couleurs (name EN, fr, hex)
+    │   ├── emoji-item.ts        interface EmojiItem { emoji, word (EN), fr }
+    │   ├── animals.data.ts      animaux de la ferme (EmojiItem[])
+    │   ├── body.data.ts         parties du corps
+    │   ├── actions.data.ts      verbes courants
+    │   ├── weather.data.ts      météo
+    │   └── modules.ts           registre MODULES + findModule() (pilote les modules emoji)
     ├── shared/
-    │   ├── quiz-engine.ts       buildQuestion() : cible + 3 distracteurs mélangés
-    │   └── celebration/         overlay confettis + message (canvas-confetti)
+    │   ├── quiz-engine.ts       buildQuestion() : cible + 3 distracteurs mélangés (générique <T>)
+    │   └── celebration/         overlay confettis + message (canvas-confetti, générique)
     └── pages/
-        ├── home/                menu : Numbers / Colors
+        ├── home/                menu : Numbers, Colors + tuiles générées depuis MODULES
         ├── numbers-learn/       grille 1..20, tap → chiffre + mot + audio
         ├── numbers-game/        quiz : chiffre affiché, 4 mots, célébration
         ├── colors-learn/        pastilles + nom + audio
-        └── colors-game/         quiz : pastille affichée, 4 noms, célébration
+        ├── colors-game/         quiz : pastille affichée, 4 noms, célébration
+        ├── emoji-learn/         GÉNÉRIQUE : emoji + mot + audio (tout module /m/:id)
+        └── emoji-game/          GÉNÉRIQUE : quiz emoji → 4 mots, célébration
 ```
 
 ### Routes
 `/` · `/numbers` · `/numbers/play` · `/colors` · `/colors/play`
+· `/m/:id` · `/m/:id/play`  (modules emoji : `animals`, `body`, `actions`, `weather`)
+
+### Modules « emoji » génériques
+Les modules **Animals / Body / Actions / Weather** ne sont **pas** des composants dédiés : ils sont
+pilotés par les données. Une seule paire de composants (`emoji-learn`, `emoji-game`) lit l'`id` de
+l'URL (`/m/:id`), résout le module via `findModule(id)` (dans `data/modules.ts`) et affiche ses
+`EmojiItem[]`. `quiz-engine` et `celebration` sont génériques et réutilisés tels quels.
+
+**Ajouter un nouveau module emoji** (≈ 2 min, aucun nouveau composant) :
+1. Créer `src/app/data/<theme>.data.ts` exportant un `EmojiItem[]` (`{ emoji, word, fr }`).
+2. Ajouter une entrée dans `MODULES` (`src/app/data/modules.ts`) : `{ id, title, fr, tileEmoji, gradient, items }`.
+3. C'est tout — la tuile d'accueil, les routes `/m/<id>` et `/m/<id>/play` et le quiz fonctionnent automatiquement.
+
+> Les emojis sont rendus par la police emoji du système (Noto sur Android) : **aucune ressource distante**,
+> compatible 100 % hors-ligne. Si un glyphe manque sur un vieil appareil, remplacer l'emoji dans le `.data.ts`.
 
 ---
 

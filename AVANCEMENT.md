@@ -29,6 +29,21 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Mini-jeu : pastille affichée, 4 noms anglais, célébration / secousse
 - [x] Compteur d'étoiles
 
+## Modules « emoji » (génériques, pilotés par les données)
+- [x] Moteur générique : `EmojiItem`, registre `modules.ts`, pages `EmojiLearn` / `EmojiGame` (routes `/m/:id`)
+- [x] Module **Animals** (animaux de la ferme, 12 éléments)
+- [x] Module **Body** (parties du corps, 10 éléments)
+- [x] Module **Actions** (verbes courants, 12 éléments)
+- [x] Module **Weather** (météo, 10 éléments)
+- [x] Module **Fruits** (12 éléments)
+- [x] Module **Vegetables** (légumes, 12 éléments)
+- [x] Module **Food** (nourriture, 12 éléments)
+- [x] Module **Family** (famille, 7 éléments)
+- [x] Module **Clothes** (vêtements, 10 éléments)
+- [x] Module **Shapes** (formes, 6 éléments)
+- [x] Module **Letters** (alphabet A–Z ; visuel = majuscule, indice = minuscule)
+- [x] Accueil : tuiles générées depuis `MODULES`, grille 2 colonnes défilante
+
 ## Android / Build
 - [x] `ng build` OK (sortie `dist/english-kids/browser`)
 - [x] Vérifier 100 % hors-ligne (police bundlée, aucune URL distante)
@@ -43,4 +58,4 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Icône et splash personnalisés (`@capacitor/assets`) — source `resources/`, fond bleu ciel
 - [ ] (Option) APK **release signé** pour distribution (keystore)
 - [ ] (Option) Audio `.mp3` pré-enregistré si garantie « zéro dépendance TTS système »
-- [ ] (Option) Plus de catégories (lettres, animaux, formes…), suivi des scores
+- [ ] (Option) Encore plus de catégories (lettres, formes, fruits, famille…), suivi des scores persistant

@@ -25,5 +25,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/colors-game/colors-game').then((m) => m.ColorsGame),
   },
+  {
+    path: 'm/:id',
+    loadComponent: () =>
+      import('./pages/emoji-learn/emoji-learn').then((m) => m.EmojiLearn),
+  },
+  {
+    path: 'm/:id/play',
+    loadComponent: () =>
+      import('./pages/emoji-game/emoji-game').then((m) => m.EmojiGame),
+  },
   { path: '**', redirectTo: '' },
 ];
