@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MODULES } from '../../data/modules';
+import { THEMES } from '../../data/themes';
+import { ProgressService } from '../../core/progress.service';
+import { ProfileService } from '../../core/profile.service';
+import { SettingsService } from '../../core/settings.service';
 
 @Component({
   selector: 'app-home',
@@ -11,23 +14,20 @@ import { MODULES } from '../../data/modules';
       <p class="subtitle">Apprends l'anglais en jouant&nbsp;!</p>
 
       <div class="tiles">
-        <a class="tile tile--numbers anim-pop" routerLink="/numbers">
-          <span class="emoji">🔢</span>
-          <span class="label">Numbers</span>
-          <span class="hint">Les nombres</span>
-        </a>
-
-        <a class="tile tile--colors anim-pop" routerLink="/colors">
-          <span class="emoji">🎨</span>
-          <span class="label">Colors</span>
-          <span class="hint">Les couleurs</span>
-        </a>
-
-        @for (m of modules; track m.id) {
-          <a class="tile anim-pop" [routerLink]="['/m', m.id]" [style.background]="m.gradient">
-            <span class="emoji">{{ m.tileEmoji }}</span>
-            <span class="label">{{ m.title }}</span>
-            <span class="hint">{{ m.fr }}</span>
+        @for (t of themes(); track t.id) {
+          <a class="tile anim-pop" [routerLink]="t.learnPath" [style.background]="t.gradient">
+            <span class="badge">
+              @if (progress.isChampion(t.id)) {
+                <span class="trophy" aria-label="Grand test réussi">🏆</span>
+              } @else {
+                @for (s of [1, 2, 3]; track s) {
+                  <span class="star" [class.earned]="progress.stars(t.id, t.items.length) >= s">★</span>
+                }
+              }
+            </span>
+            <span class="emoji">{{ t.tileEmoji }}</span>
+            <span class="label">{{ t.title }}</span>
+            <span class="hint">{{ t.fr }}</span>
           </a>
         }
       </div>
@@ -52,6 +52,7 @@ import { MODULES } from '../../data/modules';
         margin-top: 14px;
       }
       .tile {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -59,7 +60,7 @@ import { MODULES } from '../../data/modules';
         text-decoration: none;
         color: #fff;
         border-radius: var(--radius);
-        padding: 22px 12px;
+        padding: 26px 12px 18px;
         box-shadow: 0 8px 0 rgba(0, 0, 0, 0.18);
         transition: transform 0.1s ease, box-shadow 0.1s ease;
       }
@@ -67,11 +68,25 @@ import { MODULES } from '../../data/modules';
         transform: translateY(5px);
         box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
       }
-      .tile--numbers {
-        background: linear-gradient(150deg, #ff6b6b, #ff8e53);
+      .badge {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        display: flex;
+        gap: 1px;
+        font-size: 0.95rem;
+        line-height: 1;
       }
-      .tile--colors {
-        background: linear-gradient(150deg, #4dabf7, #2ec27e);
+      .star {
+        color: rgba(0, 0, 0, 0.28);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+      }
+      .star.earned {
+        color: var(--c-accent);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      }
+      .trophy {
+        font-size: 1.4rem;
       }
       .emoji {
         font-size: 3.2rem;
@@ -88,5 +103,13 @@ import { MODULES } from '../../data/modules';
   ],
 })
 export class Home {
-  readonly modules = MODULES;
+  protected readonly progress = inject(ProgressService);
+  private readonly profiles = inject(ProfileService);
+  private readonly settings = inject(SettingsService);
+
+  readonly themes = computed(() => {
+    const id = this.profiles.current()?.id;
+    if (!id) return THEMES;
+    return THEMES.filter((t) => this.settings.isThemeEnabled(id, t.id));
+  });
 }

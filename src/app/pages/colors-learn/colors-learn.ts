@@ -2,17 +2,20 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AudioService } from '../../core/audio.service';
 import { COLORS, ColorItem } from '../../data/colors.data';
+import { PlayButtons } from '../../shared/play-buttons/play-buttons';
 
 @Component({
   selector: 'app-colors-learn',
-  imports: [RouterLink],
+  imports: [RouterLink, PlayButtons],
   template: `
     <main class="screen">
       <div class="topbar">
         <a class="btn-round" routerLink="/" aria-label="Accueil">🏠</a>
         <h1 class="title">Colors</h1>
-        <a class="btn-round" routerLink="/colors/play" aria-label="Jouer">▶️</a>
+        <span class="btn-round" aria-hidden="true">📚</span>
       </div>
+
+      <app-play-buttons themeId="colors" />
 
       <div class="stage card" (click)="say(current())">
         <div

@@ -85,33 +85,57 @@ src/
 ├── index.html                 viewport portrait, theme-color, lang=fr
 ├── styles.scss                thème (couleurs vives), gros boutons, police Fredoka, animations
 └── app/
-    ├── app.ts / app.routes.ts  shell + routes (lazy loadComponent)
-    ├── core/audio.service.ts   prononciation : TTS natif (Capacitor) | Web Speech (navigateur)
+    ├── app.ts / app.routes.ts  shell (bandeau profil + router-outlet) + routes (lazy, profileGuard)
+    ├── core/
+    │   ├── audio.service.ts     prononciation : TTS natif (Capacitor) | Web Speech (navigateur)
+    │   ├── profile.service.ts   profil courant (Vico/Bille), persisté localStorage (ek.profile)
+    │   ├── progress.service.ts  progression PAR PROFIL (étoiles, grand test) + reset (ek.progress.<id>)
+    │   ├── settings.service.ts  réglages PAR ENFANT (thèmes/modes affichés) + PIN admin (ek.settings.<id>)
+    │   └── profile.guard.ts     redirige vers /profiles si aucun profil sélectionné
     ├── data/
     │   ├── numbers.data.ts      1..20 + mot anglais
     │   ├── colors.data.ts       11 couleurs (name EN, fr, hex)
     │   ├── emoji-item.ts        interface EmojiItem { emoji, word (EN), fr }
-    │   ├── animals.data.ts      animaux de la ferme (EmojiItem[])
-    │   ├── body.data.ts         parties du corps
-    │   ├── actions.data.ts      verbes courants
-    │   ├── weather.data.ts      météo
-    │   └── modules.ts           registre MODULES + findModule() (pilote les modules emoji)
+    │   ├── animals/body/…       11 fichiers <thème>.data.ts (EmojiItem[])
+    │   ├── modules.ts           registre MODULES + findModule() (pilote les modules emoji)
+    │   └── themes.ts            registre UNIFIÉ THEMES (numbers+colors+emoji) → accueil, quiz, grand test
     ├── shared/
-    │   ├── quiz-engine.ts       buildQuestion() : cible + 3 distracteurs mélangés (générique <T>)
-    │   └── celebration/         overlay confettis + message (canvas-confetti, générique)
+    │   ├── quiz-engine.ts       shuffle, buildQuestion, pickTarget (priorité non-maîtrisés), choicesFor
+    │   ├── celebration/         overlay confettis + message (canvas-confetti, générique)
+    │   ├── profile-header/      bandeau permanent (avatar + prénom), tap → /profiles
+    │   └── play-buttons/        boutons des modes activés (read/listen) + 🏆 grand test
     └── pages/
-        ├── home/                menu : Numbers, Colors + tuiles générées depuis MODULES
-        ├── numbers-learn/       grille 1..20, tap → chiffre + mot + audio
-        ├── numbers-game/        quiz : chiffre affiché, 4 mots, célébration
-        ├── colors-learn/        pastilles + nom + audio
-        ├── colors-game/         quiz : pastille affichée, 4 noms, célébration
-        ├── emoji-learn/         GÉNÉRIQUE : emoji + mot + audio (tout module /m/:id)
-        └── emoji-game/          GÉNÉRIQUE : quiz emoji → 4 mots, célébration
+        ├── profiles/            sélection du profil (Vico / Bille + carte ⚙️ Réglages)
+        ├── admin/               réglages (PIN) : thèmes/modes par enfant + réinitialisation
+        ├── home/                tuiles (THEMES filtrés par réglages) + 3 étoiles / coupe par carte
+        ├── numbers-learn/       module Numbers (stage + grille + <app-play-buttons>)
+        ├── colors-learn/        module Colors
+        ├── emoji-learn/         GÉNÉRIQUE : tout module /m/:id
+        ├── quiz/                GÉNÉRIQUE /quiz/:id/:mode (read | listen), tous kinds
+        └── grand-test/          GÉNÉRIQUE /test/:id : tous les éléments sans erreur → coupe
 ```
 
 ### Routes
-`/` · `/numbers` · `/numbers/play` · `/colors` · `/colors/play`
-· `/m/:id` · `/m/:id/play`  (modules emoji : `animals`, `body`, `actions`, `weather`)
+`/profiles` (sélection) · `/admin` (réglages, PIN) · `/` · `/numbers` · `/colors` · `/m/:id`
+· `/quiz/:id/:mode` (mode = `read` | `listen`) · `/test/:id` (grand test)
+Toutes les routes de **contenu** sont protégées par `profileGuard` ; `/profiles` et `/admin` ne le sont pas.
+
+### Profils, progression & réglages
+- **Profils** : `ProfileService` gère le profil courant (Vico/Bille, avatars `public/profiles/*.png`),
+  persisté dans `localStorage` (`ek.profile`). Bandeau `profile-header` toujours visible (tap → changer).
+- **Progression par profil** : `ProgressService` (signal réactif) stocke `ek.progress.<profileId>` =
+  `{ [themeId]: { mastered: string[], champion: bool } }`. Le quiz appelle `recordCorrect(themeId, key)`
+  sur chaque bonne réponse (clé d'élément, **partagée entre les deux modes**). `resetProfile`/`resetTheme` pour l'admin.
+- **Étoiles** : `stars(themeId, total)` → 0..3 (seuils : ≥1 / `ceil(total/2)` / `total` éléments distincts).
+- **Grand test** (`/test/:id`, débloqué à 3 ⭐) : enchaîner **tous** les éléments du thème sans erreur ;
+  une faute → retour au 1er. Réussi → `setChampion()` → **coupe 🏆** à la place des étoiles sur la carte.
+- **Sélection des questions** : `pickTarget()` priorise les éléments **non maîtrisés** puis **non encore
+  proposés** dans la session → on atteint les 3 ⭐ sans retomber sans cesse sur les mêmes.
+- **Deux modes de quiz** : `read` (visuel → choisir le mot) et `listen` (🔊 prononce → choisir l'image,
+  pour les non-lecteurs). Le composant `quiz` gère les deux pour tous les `kind` (number/color/emoji).
+- **Réglages (admin, PIN)** : `SettingsService` stocke par enfant `ek.settings.<id> = { themes, modes }`
+  (défaut : tout activé). L'accueil et `play-buttons` filtrent selon ces réglages. PIN dans `ek.adminPin`
+  (défaut `1234`, modifiable dans l'écran Admin).
 
 ### Modules « emoji » génériques
 Les modules **Animals / Body / Actions / Weather** ne sont **pas** des composants dédiés : ils sont
@@ -122,7 +146,7 @@ l'URL (`/m/:id`), résout le module via `findModule(id)` (dans `data/modules.ts`
 **Ajouter un nouveau module emoji** (≈ 2 min, aucun nouveau composant) :
 1. Créer `src/app/data/<theme>.data.ts` exportant un `EmojiItem[]` (`{ emoji, word, fr }`).
 2. Ajouter une entrée dans `MODULES` (`src/app/data/modules.ts`) : `{ id, title, fr, tileEmoji, gradient, items }`.
-3. C'est tout — la tuile d'accueil, les routes `/m/<id>` et `/m/<id>/play` et le quiz fonctionnent automatiquement.
+3. C'est tout — `themes.ts` l'agrège, la tuile d'accueil, la route `/m/<id>`, les quiz `/quiz/<id>/:mode` et le grand test fonctionnent automatiquement.
 
 > Les emojis sont rendus par la police emoji du système (Noto sur Android) : **aucune ressource distante**,
 > compatible 100 % hors-ligne. Si un glyphe manque sur un vieil appareil, remplacer l'emoji dans le `.data.ts`.

@@ -2,17 +2,20 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AudioService } from '../../core/audio.service';
 import { NUMBERS, NumberItem } from '../../data/numbers.data';
+import { PlayButtons } from '../../shared/play-buttons/play-buttons';
 
 @Component({
   selector: 'app-numbers-learn',
-  imports: [RouterLink],
+  imports: [RouterLink, PlayButtons],
   template: `
     <main class="screen">
       <div class="topbar">
         <a class="btn-round" routerLink="/" aria-label="Accueil">🏠</a>
         <h1 class="title">Numbers</h1>
-        <a class="btn-round" routerLink="/numbers/play" aria-label="Jouer">▶️</a>
+        <span class="btn-round" aria-hidden="true">📚</span>
       </div>
+
+      <app-play-buttons themeId="numbers" />
 
       <div class="stage card" (click)="say(current())">
         <div class="digit anim-pop" [attr.key]="current().value">{{ current().value }}</div>

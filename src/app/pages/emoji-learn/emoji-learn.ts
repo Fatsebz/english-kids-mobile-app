@@ -3,18 +3,21 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AudioService } from '../../core/audio.service';
 import { EmojiItem } from '../../data/emoji-item';
 import { findModule } from '../../data/modules';
+import { PlayButtons } from '../../shared/play-buttons/play-buttons';
 
 @Component({
   selector: 'app-emoji-learn',
-  imports: [RouterLink],
+  imports: [RouterLink, PlayButtons],
   template: `
     @if (current(); as cur) {
       <main class="screen">
         <div class="topbar">
           <a class="btn-round" routerLink="/" aria-label="Accueil">🏠</a>
           <h1 class="title">{{ title }}</h1>
-          <a class="btn-round" [routerLink]="['/m', id, 'play']" aria-label="Jouer">▶️</a>
+          <span class="btn-round" aria-hidden="true">📚</span>
         </div>
+
+        <app-play-buttons [themeId]="id ?? ''" />
 
         <div class="stage card" (click)="say(cur)">
           <div class="pic anim-pop" [attr.key]="cur.word">{{ cur.emoji }}</div>

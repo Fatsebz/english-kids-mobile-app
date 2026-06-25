@@ -56,7 +56,8 @@ app-root {
   flex-direction: column;
   min-height: 100dvh;
   padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
-  padding-top: calc(12px + env(safe-area-inset-top));
+  /* Réserve la hauteur du bandeau de profil fixe (56px + safe-area). */
+  padding-top: calc(68px + env(safe-area-inset-top));
   gap: 14px;
 }
 
