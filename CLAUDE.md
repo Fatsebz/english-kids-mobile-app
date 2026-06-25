@@ -118,6 +118,27 @@ src/
 
 ---
 
+## Icône & splash screen
+Les images source sont dans **`resources/`** et les ressources Android sont générées avec
+**`@capacitor/assets`** (fond **bleu ciel #AEEEFA**, assorti à l'illustration) :
+
+| Fichier source (`resources/`) | Rôle |
+|------|------|
+| `Bicon_1024.png` | image fournie (icône carrée 1024²) |
+| `icon-only.png`, `icon-foreground.png` | icône (legacy + premier plan adaptatif) |
+| `icon-background.png` | fond adaptatif (bleu ciel uni) |
+| `splash.png`, `splash-dark.png` | splash 2732² (illustration centrée sur fond uni) |
+
+Régénérer après modification d'une image source :
+```powershell
+npx @capacitor/assets generate --android --assetPath resources \
+  --iconBackgroundColor "#AEEEFA" --iconBackgroundColorDark "#1B2A4A" \
+  --splashBackgroundColor "#AEEEFA" --splashBackgroundColorDark "#1B2A4A"
+```
+> L'app étant verrouillée en portrait, les variantes `drawable-land*` générées sont supprimées
+> (inutiles) pour alléger l'APK. Sur **Android 12+**, l'écran de démarrage système affiche l'icône
+> centrée sur le fond ; le splash plein-écran s'affiche via `@drawable/splash`.
+
 ## Notes techniques
 - Angular 22 : composants **standalone**, **signals**, control flow `@if`/`@for`. Fichiers nommés
   `app.ts`, `home.ts`, etc. (nouvelle convention, sans suffixe `.component`).

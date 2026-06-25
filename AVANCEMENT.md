@@ -40,7 +40,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 ## Reste à faire / pistes (optionnel)
 - [ ] Tester l'APK sur un appareil réel : audio TTS natif, orientation, navigation
 - [ ] Installer la voix anglaise (en-US) sur l'appareil pour l'audio hors-ligne
-- [ ] (Option) Icône/splash personnalisés (`@capacitor/assets`)
+- [x] Icône et splash personnalisés (`@capacitor/assets`) — source `resources/`, fond bleu ciel
 - [ ] (Option) APK **release signé** pour distribution (keystore)
 - [ ] (Option) Audio `.mp3` pré-enregistré si garantie « zéro dépendance TTS système »
 - [ ] (Option) Plus de catégories (lettres, animaux, formes…), suivi des scores
