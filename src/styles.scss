@@ -1,0 +1,229 @@
+/* ===== English Kids – styles globaux ===== */
+
+/* Police embarquée localement (100% hors-ligne) */
+@import '@fontsource/fredoka/latin-400.css';
+@import '@fontsource/fredoka/latin-500.css';
+@import '@fontsource/fredoka/latin-600.css';
+@import '@fontsource/fredoka/latin-700.css';
+
+:root {
+  --c-bg-1: #6a8dff;
+  --c-bg-2: #b07bff;
+  --c-card: #ffffff;
+  --c-text: #2b2d42;
+  --c-primary: #ff6b6b;
+  --c-primary-d: #e85555;
+  --c-accent: #ffd23f;
+  --c-green: #2ec27e;
+  --c-green-d: #25a169;
+  --c-blue: #4dabf7;
+  --c-shadow: rgba(43, 45, 66, 0.25);
+  --radius: 28px;
+  --tap: 72px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Fredoka', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--c-text);
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body {
+  background: linear-gradient(160deg, var(--c-bg-1), var(--c-bg-2));
+  background-attachment: fixed;
+}
+
+app-root {
+  display: block;
+  min-height: 100%;
+}
+
+/* ---------- Layout ---------- */
+.screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  padding-top: calc(12px + env(safe-area-inset-top));
+  gap: 14px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.6rem, 7vw, 2.4rem);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 3px 0 var(--c-shadow);
+  flex: 1;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0;
+  text-align: center;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* ---------- Boutons ---------- */
+.btn {
+  border: none;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #fff;
+  background: var(--c-primary);
+  box-shadow: 0 6px 0 var(--c-primary-d);
+  padding: 18px 22px;
+  min-height: var(--tap);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--c-primary-d);
+}
+
+.btn--green {
+  background: var(--c-green);
+  box-shadow: 0 6px 0 var(--c-green-d);
+}
+.btn--green:active {
+  box-shadow: 0 2px 0 var(--c-green-d);
+}
+
+.btn--ghost {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--c-text);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.18);
+}
+.btn--ghost:active {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+
+/* Bouton rond (retour, audio) */
+.btn-round {
+  width: var(--tap);
+  height: var(--tap);
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.18);
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  flex: 0 0 auto;
+}
+.btn-round:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Cartes ---------- */
+.card {
+  background: var(--c-card);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 24px var(--c-shadow);
+}
+
+/* Grille générique */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* ---------- Animations ---------- */
+@keyframes pop-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-18px);
+  }
+  60% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  60% {
+    transform: translateX(-8px);
+  }
+  80% {
+    transform: translateX(8px);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+.anim-pop {
+  animation: pop-in 0.35s ease both;
+}
+.anim-bounce {
+  animation: bounce 0.6s ease;
+}
+.anim-shake {
+  animation: shake 0.4s ease;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
