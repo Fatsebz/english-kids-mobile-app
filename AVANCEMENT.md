@@ -73,6 +73,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] **Alerte voix indisponible** : bannière si aucune voix anglaise (TTS natif ou Web Speech)
 - [x] **Sauvegarde / Restauration** de la progression (export/import JSON) dans l'Admin
 - [x] **Tests unitaires** (Vitest) : `quiz-engine` (pickTarget/choicesFor), `ProgressService`, `SettingsService`
+- [x] **Feedback immédiat des étoiles** : célébration spéciale + fanfare quand un palier (1/2/3 ⭐) est franchi en quiz
 
 ## Android / Build
 - [x] `ng build` OK (sortie `dist/english-kids/browser`)

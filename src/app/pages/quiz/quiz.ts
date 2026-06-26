@@ -4,7 +4,7 @@ import { AudioService } from '../../core/audio.service';
 import { ProgressService } from '../../core/progress.service';
 import { findTheme, ThemeEntry } from '../../data/themes';
 import { choicesFor, pickTarget } from '../../shared/quiz-engine';
-import { Celebration } from '../../shared/celebration/celebration';
+import { Celebration, CelebrateOptions } from '../../shared/celebration/celebration';
 
 type Mode = 'read' | 'listen';
 
@@ -170,6 +170,7 @@ export class Quiz {
   readonly title = this.theme?.title ?? '';
   readonly kind = this.theme?.kind ?? 'emoji';
   readonly learnPath = this.theme?.learnPath ?? '/';
+  private readonly total = this.theme?.items.length ?? 0;
 
   readonly target = signal<ThemeEntry | null>(null);
   readonly choices = signal<ThemeEntry[]>([]);
@@ -178,6 +179,7 @@ export class Quiz {
 
   private readonly seen = new Set<string>();
   private locked = false;
+  private gotoLearn = false;
 
   constructor() {
     // Thème invalide, ou mode « écoute » demandé sur un thème non écoutable → retour accueil.
@@ -200,18 +202,35 @@ export class Quiz {
     if (c.key === t.key) {
       this.locked = true;
       this.audio.speak(c.label);
+      const before = this.progress.stars(this.id, this.total);
       this.progress.recordCorrect(this.id, c.key);
+      const after = this.progress.stars(this.id, this.total);
       this.score.update((s) => s + 1);
-      this.celeb()?.play();
+      // Atteindre la 3e étoile débloque le grand test → on ira le proposer.
+      this.gotoLearn = before < 3 && after >= 3;
+      // Si une bonne réponse fait franchir un palier d'étoile → célébration spéciale.
+      this.celeb()?.play(after > before ? this.starCelebration(after) : undefined);
     } else {
       this.wrong.set(c.key);
       setTimeout(() => this.wrong.set(null), 450);
     }
   }
 
-  /** Appelé à la fin de la célébration : question suivante. */
+  /** Célébration de palier d'étoile (avec fanfare). 3 ⭐ = grand test débloqué. */
+  private starCelebration(stars: number): CelebrateOptions {
+    if (stars >= 3) return { icon: '🏆', message: '3 étoiles ! Grand test débloqué', sound: true };
+    if (stars === 2) return { icon: '⭐', message: '2 étoiles ! Continue', sound: true };
+    return { icon: '⭐', message: 'Nouvelle étoile !', sound: true };
+  }
+
+  /** Appelé à la fin de la célébration : grand test débloqué → page du thème, sinon question suivante. */
   next(): void {
     this.locked = false;
+    if (this.gotoLearn) {
+      this.gotoLearn = false;
+      this.router.navigateByUrl(this.learnPath);
+      return;
+    }
     this.nextQuestion();
   }
 
