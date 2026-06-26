@@ -1,0 +1,19 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="jump">
+  <!-- sol -->
+  <line x1="22" y1="90" x2="78" y2="90" stroke="#c2cbd3" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8" />
+  <!-- chevrons de saut -->
+  <g fill="none" stroke="#ffd23f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 62 l5 -7 5 7" />
+    <path d="M68 62 l5 -7 5 7" />
+  </g>
+  <!-- corps : bras levés, jambes pliées -->
+  <g stroke="#4dabf7" stroke-width="7" stroke-linecap="round" fill="none">
+    <path d="M50 46 L33 27" />
+    <path d="M50 46 L67 27" />
+    <line x1="50" y1="40" x2="50" y2="62" />
+    <path d="M50 62 L40 72 L45 82" />
+    <path d="M50 62 L60 72 L55 82" />
+  </g>
+  <!-- tête -->
+  <circle cx="50" cy="27" r="9" fill="#4dabf7" />
+</svg>

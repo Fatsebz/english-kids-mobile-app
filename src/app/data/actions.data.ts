@@ -12,7 +12,7 @@ export const ACTIONS: EmojiItem[] = [
   { emoji: '🎤', word: 'sing', fr: 'chanter' },
   { emoji: '💃', word: 'dance', fr: 'danser' },
   { emoji: '🏊', word: 'swim', fr: 'nager' },
-  { emoji: '🤸', word: 'jump', fr: 'sauter' },
+  { img: 'icons/jump.svg', word: 'jump', fr: 'sauter' },
   { emoji: '⚽', word: 'play', fr: 'jouer' },
   { emoji: '😢', word: 'cry', fr: 'pleurer' },
   { emoji: '😂', word: 'laugh', fr: 'rire' },

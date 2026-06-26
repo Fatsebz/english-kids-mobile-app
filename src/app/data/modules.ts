@@ -2,6 +2,7 @@ import { EmojiItem } from './emoji-item';
 import { ANIMALS } from './animals.data';
 import { PETS } from './pets.data';
 import { FOREST } from './forest.data';
+import { INSECTS } from './insects.data';
 import { SEASONS } from './seasons.data';
 import { BODY } from './body.data';
 import { ACTIONS } from './actions.data';
@@ -83,6 +84,14 @@ export const MODULES: LearnModule[] = [
     tileEmoji: '🦊',
     gradient: 'linear-gradient(150deg, #2ec27e, #8b5a2b)',
     items: FOREST,
+  },
+  {
+    id: 'insects',
+    title: 'Insects',
+    fr: 'Les insectes',
+    tileEmoji: '🐞',
+    gradient: 'linear-gradient(150deg, #7cb342, #ffd23f)',
+    items: INSECTS,
   },
   {
     id: 'seasons',

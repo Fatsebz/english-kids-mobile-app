@@ -16,7 +16,7 @@ export const GROUPS: ThemeGroup[] = [
     fr: 'Les animaux',
     tileEmoji: '🐾',
     gradient: 'linear-gradient(150deg, #2ec27e, #ffd23f)',
-    themeIds: ['animals', 'pets', 'zoo', 'forest'],
+    themeIds: ['animals', 'pets', 'zoo', 'forest', 'insects'],
   },
   {
     id: 'concepts',
