@@ -214,6 +214,6 @@ npx @capacitor/assets generate --android --assetPath resources \
   `app.ts`, `home.ts`, etc. (nouvelle convention, sans suffixe `.component`).
 - `webDir` (capacitor.config.ts) = `dist/english-kids/browser` (sortie du builder `@angular/build:application`).
 - Orientation **portrait** verrouillée dans `AndroidManifest.xml` (`android:screenOrientation="portrait"`).
-- appId : `com.keyconsulting.englishkids` — nom : **English Kids**.
+- appId : `com.fatsebz.englishkids` — nom : **English Kids**.
 
 Voir **AVANCEMENT.md** pour le suivi des tâches.

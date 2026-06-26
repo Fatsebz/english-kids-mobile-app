@@ -8,7 +8,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Scaffolder le projet **Angular 22** (standalone, SCSS, routing)
 - [x] Installer **Capacitor 8** + `@capacitor/android`
 - [x] Installer plugins : `@capacitor-community/text-to-speech` (TTS), `canvas-confetti`, `@fontsource/fredoka`
-- [x] `npx cap init` (appId `com.keyconsulting.englishkids`, webDir `dist/english-kids/browser`)
+- [x] `npx cap init` (appId `com.fatsebz.englishkids`, webDir `dist/english-kids/browser`)
 
 ## UI & socle
 - [x] Thème enfant global (`styles.scss`) : couleurs vives, gros boutons ≥ 72px, police Fredoka locale, animations (pop/bounce/shake)

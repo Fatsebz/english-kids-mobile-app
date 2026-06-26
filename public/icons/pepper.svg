@@ -1,0 +1,10 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="pepper shaker">
+  <rect x="34" y="42" width="32" height="44" rx="8" fill="#5b5f66" />
+  <path d="M35 43 q15 -16 30 0 z" fill="#3c4046" />
+  <g fill="#2b2d42">
+    <circle cx="44" cy="36" r="1.7" />
+    <circle cx="50" cy="33" r="1.7" />
+    <circle cx="56" cy="36" r="1.7" />
+  </g>
+  <rect x="34" y="60" width="32" height="8" fill="#ffd23f" />
+</svg>

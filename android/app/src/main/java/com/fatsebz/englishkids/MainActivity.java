@@ -1,4 +1,4 @@
-package com.keyconsulting.englishkids;
+package com.fatsebz.englishkids;
 
 import com.getcapacitor.BridgeActivity;
 
