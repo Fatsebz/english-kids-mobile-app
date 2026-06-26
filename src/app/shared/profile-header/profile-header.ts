@@ -18,7 +18,6 @@ import { UkFlag } from '../uk-flag/uk-flag';
         <img [src]="profile()!.img" [alt]="profile()!.name" />
         <span class="name">{{ profile()!.name }}</span>
         <app-uk-flag class="flag" />
-        <span class="swap" aria-hidden="true">🔁</span>
       </header>
     }
   `,
@@ -61,11 +60,6 @@ import { UkFlag } from '../uk-flag/uk-flag';
         width: 46px;
         aspect-ratio: 2 / 1;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-      }
-      .swap {
-        margin-left: auto;
-        font-size: 1.2rem;
-        opacity: 0.9;
       }
     `,
   ],
