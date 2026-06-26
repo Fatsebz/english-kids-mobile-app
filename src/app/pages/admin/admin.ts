@@ -487,7 +487,8 @@ const CREATE_TARGET = '__create__';
         flex: 1;
       }
       .backup {
-        width: 100%;
+        /* Tient compte des marges latérales de 16px héritées de .acc > * (sinon débordement). */
+        width: calc(100% - 32px);
         min-height: 90px;
         font-family: monospace;
         font-size: 0.85rem;
