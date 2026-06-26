@@ -108,6 +108,27 @@ import { THEMES } from '../../data/themes';
           @if (pinError()) { <p class="err">Le code doit comporter exactement 4 chiffres.</p> }
           @if (pinSaved()) { <p class="ok">Code mis à jour ✅</p> }
         </section>
+
+        <section class="card block">
+          <h2>Sauvegarde</h2>
+          <p class="hint-txt">
+            Exporte la progression et les réglages de <b>tous les profils</b> (à garder en lieu sûr ou
+            transférer sur un autre appareil). La progression est sinon perdue en cas de désinstallation.
+          </p>
+          <div class="save-actions">
+            <button class="btn" (click)="exportData()">⬇️ Exporter</button>
+            <button class="btn btn--ghost" (click)="importData()">⬆️ Restaurer</button>
+          </div>
+          <textarea
+            #ta
+            class="backup"
+            [value]="backupText()"
+            (input)="backupText.set(ta.value)"
+            placeholder="Le code de sauvegarde apparaît ici après « Exporter ». Pour restaurer, colle un code ici puis « Restaurer » (l'application se rechargera)."
+          ></textarea>
+          @if (backupMsg()) { <p class="ok">{{ backupMsg() }}</p> }
+          @if (backupError()) { <p class="err">{{ backupError() }}</p> }
+        </section>
       }
     </main>
   `,
@@ -234,6 +255,29 @@ import { THEMES } from '../../data/themes';
         min-width: 52px;
         text-align: right;
       }
+      .hint-txt {
+        margin: 0 0 12px;
+        font-size: 0.95rem;
+        opacity: 0.75;
+      }
+      .save-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .save-actions .btn {
+        flex: 1;
+      }
+      .backup {
+        width: 100%;
+        min-height: 90px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 14px;
+        resize: vertical;
+      }
       /* Pavé PIN */
       .pin-card {
         padding: 22px;
@@ -305,6 +349,9 @@ export class Admin {
   readonly child = signal(this.children[0].id);
   readonly pinSaved = signal(false);
   readonly pinError = signal(false);
+  readonly backupText = signal('');
+  readonly backupMsg = signal('');
+  readonly backupError = signal('');
 
   childName(): string {
     return this.children.find((c) => c.id === this.child())?.name ?? '';
@@ -353,6 +400,65 @@ export class Admin {
 
   resetTheme(themeId: string): void {
     this.progress.resetTheme(this.child(), themeId);
+  }
+
+  /** Exporte toutes les données `ek.*` (hors profil courant) en JSON. */
+  exportData(): void {
+    const data: Record<string, string> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('ek.') && k !== 'ek.profile') {
+        const v = localStorage.getItem(k);
+        if (v !== null) data[k] = v;
+      }
+    }
+    const json = JSON.stringify({ app: 'english-kids', version: 1, data });
+    this.backupText.set(json);
+    this.backupError.set('');
+    this.backupMsg.set('Sauvegarde générée : copie ce texte et garde-le (un fichier .json a aussi été proposé au téléchargement).');
+    try {
+      navigator.clipboard?.writeText(json);
+    } catch {
+      /* presse-papier indisponible : le texte reste sélectionnable */
+    }
+    this.download(json);
+  }
+
+  private download(json: string): void {
+    try {
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'english-kids-sauvegarde.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      /* la WebView peut bloquer le téléchargement : le texte reste copiable */
+    }
+  }
+
+  /** Restaure les données depuis le JSON collé, puis recharge l'application. */
+  importData(): void {
+    const raw = this.backupText().trim();
+    this.backupMsg.set('');
+    if (!raw) {
+      this.backupError.set("Colle d'abord un code de sauvegarde dans la zone ci-dessous.");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw) as { app?: string; data?: Record<string, unknown> };
+      if (parsed?.app !== 'english-kids' || !parsed.data || typeof parsed.data !== 'object') {
+        this.backupError.set('Code de sauvegarde invalide.');
+        return;
+      }
+      for (const [k, v] of Object.entries(parsed.data)) {
+        if (k.startsWith('ek.')) localStorage.setItem(k, String(v));
+      }
+      location.reload();
+    } catch {
+      this.backupError.set('Code de sauvegarde illisible.');
+    }
   }
 
   changePin(input: HTMLInputElement): void {

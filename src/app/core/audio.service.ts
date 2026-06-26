@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { ProfileService } from './profile.service';
@@ -16,8 +16,13 @@ export class AudioService {
   private readonly settings = inject(SettingsService);
   private voicesReady = false;
 
+  /** `true` si aucune voix anglaise n'est disponible (prononciation muette). */
+  readonly unavailable = signal(false);
+
   constructor() {
-    if (!this.native) {
+    if (this.native) {
+      this.checkNativeVoices();
+    } else {
       this.primeWebVoices();
     }
   }
@@ -59,13 +64,31 @@ export class AudioService {
     return percent / 100;
   }
 
+  /** Vérifie qu'une voix anglaise est installée (TTS natif). */
+  private async checkNativeVoices(): Promise<void> {
+    try {
+      const res = await TextToSpeech.getSupportedLanguages();
+      const langs = (res?.languages ?? []) as string[];
+      const hasEnglish = langs.some((l) => String(l).toLowerCase().startsWith('en'));
+      this.unavailable.set(!hasEnglish);
+    } catch {
+      /* API indisponible : on n'affiche pas de fausse alerte */
+    }
+  }
+
   // ----- Web Speech API -----
 
   private primeWebVoices(): void {
     const synth = window.speechSynthesis;
-    if (!synth) return;
+    if (!synth) {
+      this.unavailable.set(true);
+      return;
+    }
     const load = () => {
-      this.voicesReady = synth.getVoices().length > 0;
+      const voices = synth.getVoices();
+      if (voices.length === 0) return; // pas encore chargées
+      this.voicesReady = true;
+      this.unavailable.set(!voices.some((v) => v.lang?.toLowerCase().startsWith('en')));
     };
     load();
     synth.addEventListener?.('voiceschanged', load);

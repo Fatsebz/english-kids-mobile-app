@@ -69,6 +69,10 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] **Admin** (3e carte ⚙️, PIN défaut `1234`) : thèmes affichés + modes par enfant, réinitialisation (profil / thème)
 - [x] **Vitesse de la voix par profil** (slider 50–100 %, défaut 90 %) + bouton de test dans l'Admin
 - [x] Accueil et page *Apprendre* filtrés selon les réglages du profil
+- [x] Réglages en **liste noire** : tout thème (existant/futur) visible par défaut, l'Admin masque
+- [x] **Alerte voix indisponible** : bannière si aucune voix anglaise (TTS natif ou Web Speech)
+- [x] **Sauvegarde / Restauration** de la progression (export/import JSON) dans l'Admin
+- [x] **Tests unitaires** (Vitest) : `quiz-engine` (pickTarget/choicesFor), `ProgressService`, `SettingsService`
 
 ## Android / Build
 - [x] `ng build` OK (sortie `dist/english-kids/browser`)
