@@ -72,6 +72,20 @@ export class SettingsService {
     this.save(id, { ...this.get(id), rate: clampRate(percent) });
   }
 
+  /** Supprime les réglages d'un profil (à la suppression du profil). */
+  clear(id: string): void {
+    this.cache.update((c) => {
+      const next = { ...c };
+      delete next[id];
+      return next;
+    });
+    try {
+      localStorage.removeItem(this.key(id));
+    } catch {
+      /* ignore */
+    }
+  }
+
   // ---- PIN ----
   checkPin(pin: string): boolean {
     return pin === this.pin();

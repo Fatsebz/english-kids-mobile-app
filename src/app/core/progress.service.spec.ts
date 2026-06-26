@@ -11,6 +11,8 @@ describe('ProgressService', () => {
     TestBed.configureTestingModule({});
     profiles = TestBed.inject(ProfileService);
     progress = TestBed.inject(ProgressService);
+    profiles.createWithId('vico', 'Victor', 'profiles/vico.png');
+    profiles.createWithId('bille', 'Bertille', 'profiles/bille.png');
     profiles.select('vico');
   });
 

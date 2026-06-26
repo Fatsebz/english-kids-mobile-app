@@ -130,8 +130,15 @@ Toutes les routes de **contenu** sont protégées par `profileGuard` ; `/profile
   choisit le mot anglais (traduction). Toujours `listen: false`.
 
 ### Profils, progression & réglages
-- **Profils** : `ProfileService` gère le profil courant (Vico/Bille, avatars `public/profiles/*.png`),
-  persisté dans `localStorage` (`ek.profile`). Bandeau `profile-header` toujours visible (tap → changer).
+- **Profils** : `ProfileService` gère une **liste dynamique** de profils (créés par le parent) persistée
+  dans `localStorage` (`ek.profiles`, signal) + le profil courant (`ek.profile`). **Aucun profil par défaut** :
+  au premier lancement la liste est vide et l'écran « Qui joue ? » ne propose que **➕ Nouveau profil**
+  (le bouton n'apparaît que si la liste est vide ; ensuite l'ajout se fait dans les Réglages). Avatars
+  `public/profiles/*.png` (palette `AVATARS`). CRUD : `addProfile`/`renameProfile`/`removeProfile` +
+  `createWithId` (restauration, conserve un id). Création (prénom ≤ 20 + avatar) via le composant partagé
+  `shared/profile-editor`. Bandeau `profile-header` toujours visible (tap → changer). La **restauration**
+  (`admin`) propose un **remappage** des id de profil de la sauvegarde vers les profils existants (ou les
+  recrée en conservant l'id) ; les id legacy `vico`/`bille` restent reconnus pour la rétro-compat.
 - **Progression par profil** : `ProgressService` (signal réactif) stocke `ek.progress.<profileId>` =
   `{ [themeId]: { mastered: string[], champion: bool } }`. Le quiz appelle `recordCorrect(themeId, key)`
   sur chaque bonne réponse (clé d'élément, **partagée entre les deux modes**). `resetProfile`/`resetTheme` pour l'admin.

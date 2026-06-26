@@ -1,15 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProfileService } from '../../core/profile.service';
+import { AVATARS, Profile, ProfileService } from '../../core/profile.service';
 import { ProgressService } from '../../core/progress.service';
 import { SettingsService, QuizMode } from '../../core/settings.service';
 import { AudioService } from '../../core/audio.service';
 import { THEMES } from '../../data/themes';
 import { APP_VERSION, CHANGELOG } from '../../data/changelog';
+import { ProfileEditor, ProfileDraft } from '../../shared/profile-editor/profile-editor';
+
+/** Cible de restauration d'un id de profil : « créer » ou un id de profil existant. */
+const CREATE_TARGET = '__create__';
 
 @Component({
   selector: 'app-admin',
-  imports: [RouterLink],
+  imports: [RouterLink, ProfileEditor],
   template: `
     <main class="screen">
       <div class="topbar">
@@ -36,19 +40,45 @@ import { APP_VERSION, CHANGELOG } from '../../data/changelog';
           </div>
         </div>
       } @else {
-        <div class="tabs">
-          @for (c of children; track c.id) {
-            <button class="tab" [class.active]="child() === c.id" (click)="child.set(c.id)">
-              {{ c.name }}
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('profiles')">
+            <span>👤 Profils</span><span class="acc-icon">{{ open() === 'profiles' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'profiles') {
+            <div class="rows">
+              @for (p of children(); track p.id) {
+                <div class="row prof-row">
+                  <span class="prof"><img [src]="p.img" alt="" />{{ p.name }}</span>
+                  <span class="prof-actions">
+                    <button class="mini" (click)="editProfile(p)" aria-label="Renommer">✏️</button>
+                    <button class="mini danger-mini" (click)="deleteProfile(p)" aria-label="Supprimer">🗑️</button>
+                  </span>
+                </div>
+              }
+              @if (!children().length) {
+                <p class="hint-txt">Aucun profil. Ajoutes-en un ci-dessous.</p>
+              }
+            </div>
+            <button class="btn btn--green" [disabled]="children().length >= maxProfiles" (click)="addProfile()">
+              ➕ Ajouter un profil
             </button>
           }
-        </div>
+        </section>
 
-        <section class="card block acc">
-          <button class="acc-head" (click)="toggle('themes')">
-            <span>Thèmes affichés</span><span class="acc-icon">{{ open() === 'themes' ? '−' : '+' }}</span>
-          </button>
-          @if (open() === 'themes') {
+        @if (children().length) {
+          <div class="tabs">
+            @for (c of children(); track c.id) {
+              <button class="tab" [class.active]="child() === c.id" (click)="child.set(c.id)">
+                {{ c.name }}
+              </button>
+            }
+          </div>
+
+          <section class="card block acc">
+            <button class="acc-head" (click)="toggle('themes')">
+              <span>Thèmes affichés</span><span class="acc-icon">{{ open() === 'themes' ? '−' : '+' }}</span>
+            </button>
+            @if (open() === 'themes') {
             <div class="rows">
               @for (t of themes; track t.id) {
                 <label class="row">
@@ -116,6 +146,7 @@ import { APP_VERSION, CHANGELOG } from '../../data/changelog';
             </div>
           }
         </section>
+        }
 
         <section class="card block acc">
           <button class="acc-head" (click)="toggle('pin')">
@@ -153,6 +184,34 @@ import { APP_VERSION, CHANGELOG } from '../../data/changelog';
             ></textarea>
             @if (backupMsg()) { <p class="ok">{{ backupMsg() }}</p> }
             @if (backupError()) { <p class="err">{{ backupError() }}</p> }
+
+            @if (restoreRows(); as rows) {
+              <div class="restore">
+                <p class="hint-txt">
+                  Associe chaque profil de la sauvegarde à un profil de cette application (ou crée-le).
+                  Utile après un changement d'application : les anciens identifiants peuvent différer.
+                </p>
+                <div class="rows">
+                  @for (r of rows; track r.oldId) {
+                    <div class="row">
+                      <span>{{ r.label }}</span>
+                      <select class="map-sel" (change)="setTarget(r.oldId, $event)">
+                        <option [value]="createTarget" [selected]="restoreTargets()[r.oldId] === createTarget">
+                          ＋ Créer ce profil
+                        </option>
+                        @for (p of children(); track p.id) {
+                          <option [value]="p.id" [selected]="restoreTargets()[r.oldId] === p.id">→ {{ p.name }}</option>
+                        }
+                      </select>
+                    </div>
+                  }
+                </div>
+                <div class="save-actions">
+                  <button class="btn btn--green" (click)="confirmRestore()">✅ Confirmer</button>
+                  <button class="btn btn--ghost" (click)="cancelRestore()">Annuler</button>
+                </div>
+              </div>
+            }
           }
         </section>
 
@@ -176,6 +235,10 @@ import { APP_VERSION, CHANGELOG } from '../../data/changelog';
         </section>
       }
     </main>
+
+    @if (editorOpen()) {
+      <app-profile-editor [profile]="editing()" (save)="onEditorSave($event)" (cancel)="closeEditor()" />
+    }
   `,
   styles: [
     `
@@ -271,6 +334,47 @@ import { APP_VERSION, CHANGELOG } from '../../data/changelog';
         font-family: inherit;
         font-weight: 600;
         cursor: pointer;
+      }
+      .prof {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+      }
+      .prof img {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px var(--c-shadow);
+      }
+      .prof-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .prof-actions .mini {
+        background: #eef2f7;
+        color: var(--c-text);
+        font-size: 1.1rem;
+        padding: 6px 10px;
+      }
+      .prof-actions .danger-mini {
+        background: #ffe3e3;
+        color: #c92a2a;
+      }
+      .map-sel {
+        font-family: inherit;
+        font-size: 0.95rem;
+        padding: 6px 8px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        max-width: 55%;
+      }
+      .restore {
+        border-top: 1px solid #eee;
+        margin-top: 12px;
+        padding-top: 12px;
       }
       .danger {
         background: #c92a2a;
@@ -454,25 +558,75 @@ export class Admin {
   private readonly audio = inject(AudioService);
 
   readonly children = this.profiles.profiles;
+  readonly maxProfiles = this.profiles.maxProfiles;
   readonly themes = THEMES;
   readonly appVersion = APP_VERSION;
   readonly changelog = CHANGELOG;
   readonly pad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+  readonly createTarget = CREATE_TARGET;
 
   readonly unlocked = signal(false);
   /** Section d'accordéon ouverte (une seule à la fois ; '' = toutes repliées). */
   readonly open = signal('');
   readonly entry = signal('');
   readonly error = signal(false);
-  readonly child = signal(this.children[0].id);
+  readonly child = signal(this.children()[0]?.id ?? '');
   readonly pinSaved = signal(false);
   readonly pinError = signal(false);
   readonly backupText = signal('');
   readonly backupMsg = signal('');
   readonly backupError = signal('');
 
+  // ---- Gestion des profils ----
+  readonly editorOpen = signal(false);
+  readonly editing = signal<Profile | null>(null);
+
+  // ---- Restauration avec remappage d'id ----
+  readonly restoreRows = signal<{ oldId: string; label: string }[] | null>(null);
+  readonly restoreTargets = signal<Record<string, string>>({});
+  private restorePayload: Record<string, unknown> = {};
+  private restoreMeta: Record<string, { name: string; img: string }> = {};
+
   childName(): string {
-    return this.children.find((c) => c.id === this.child())?.name ?? '';
+    return this.children().find((c) => c.id === this.child())?.name ?? '';
+  }
+
+  // ---- Profils ----
+  addProfile(): void {
+    this.editing.set(null);
+    this.editorOpen.set(true);
+  }
+
+  editProfile(p: Profile): void {
+    this.editing.set(p);
+    this.editorOpen.set(true);
+  }
+
+  closeEditor(): void {
+    this.editorOpen.set(false);
+    this.editing.set(null);
+  }
+
+  onEditorSave(draft: ProfileDraft): void {
+    const target = this.editing();
+    if (target) {
+      this.profiles.renameProfile(target.id, draft.name, draft.img);
+    } else {
+      const created = this.profiles.addProfile(draft.name, draft.img);
+      if (created) this.child.set(created.id);
+    }
+    this.closeEditor();
+  }
+
+  deleteProfile(p: Profile): void {
+    if (!confirm(`Supprimer le profil « ${p.name} » et tout son avancement ?`)) return;
+    this.profiles.removeProfile(p.id);
+    this.progress.resetProfile(p.id);
+    this.settings.clear(p.id);
+    // Garder un onglet courant valide.
+    if (!this.children().some((c) => c.id === this.child())) {
+      this.child.set(this.children()[0]?.id ?? '');
+    }
   }
 
   toggle(id: string): void {
@@ -560,27 +714,128 @@ export class Admin {
     }
   }
 
-  /** Restaure les données depuis le JSON collé, puis recharge l'application. */
+  /**
+   * Première étape de la restauration : valide le JSON et détecte les profils de la sauvegarde.
+   * S'il y a des profils, propose un remappage (id → profil de cette app) ; sinon importe directement.
+   */
   importData(): void {
     const raw = this.backupText().trim();
     this.backupMsg.set('');
+    this.restoreRows.set(null);
     if (!raw) {
       this.backupError.set("Colle d'abord un code de sauvegarde dans la zone ci-dessous.");
       return;
     }
+    let data: Record<string, unknown>;
     try {
       const parsed = JSON.parse(raw) as { app?: string; data?: Record<string, unknown> };
       if (parsed?.app !== 'english-kids' || !parsed.data || typeof parsed.data !== 'object') {
         this.backupError.set('Code de sauvegarde invalide.');
         return;
       }
-      for (const [k, v] of Object.entries(parsed.data)) {
-        if (k.startsWith('ek.')) localStorage.setItem(k, String(v));
-      }
-      location.reload();
+      data = parsed.data;
     } catch {
       this.backupError.set('Code de sauvegarde illisible.');
+      return;
     }
+    this.backupError.set('');
+
+    // Ids de profil présents dans la sauvegarde (clés ek.progress.<id> / ek.settings.<id>).
+    const ids = new Set<string>();
+    for (const k of Object.keys(data)) {
+      const m = k.match(/^ek\.(?:progress|settings)\.(.+)$/);
+      if (m) ids.add(m[1]);
+    }
+    // Métadonnées (prénom/avatar) depuis ek.profiles de la sauvegarde, si présent.
+    const meta: Record<string, { name: string; img: string }> = {};
+    try {
+      const bp = data['ek.profiles'];
+      const list = typeof bp === 'string' ? JSON.parse(bp) : bp;
+      if (Array.isArray(list)) {
+        for (const p of list as Profile[]) {
+          if (p?.id) {
+            meta[p.id] = { name: p.name, img: p.img };
+            ids.add(p.id);
+          }
+        }
+      }
+    } catch {
+      /* ek.profiles illisible : on se rabat sur les valeurs par défaut */
+    }
+
+    this.restorePayload = data;
+    this.restoreMeta = meta;
+
+    if (ids.size === 0) {
+      // Sauvegarde sans profil identifiable : import direct.
+      this.applyImport(data, {});
+      return;
+    }
+
+    const rows = [...ids].map((id) => ({ oldId: id, label: this.restoreLabel(id) }));
+    const targets: Record<string, string> = {};
+    for (const id of ids) targets[id] = this.profiles.hasProfileId(id) ? id : CREATE_TARGET;
+    this.restoreRows.set(rows);
+    this.restoreTargets.set(targets);
+  }
+
+  setTarget(oldId: string, ev: Event): void {
+    const value = (ev.target as HTMLSelectElement).value;
+    this.restoreTargets.update((t) => ({ ...t, [oldId]: value }));
+  }
+
+  cancelRestore(): void {
+    this.restoreRows.set(null);
+    this.restoreTargets.set({});
+    this.restorePayload = {};
+    this.restoreMeta = {};
+  }
+
+  /** Deuxième étape : crée les profils choisis, réécrit les clés selon le mapping, puis recharge. */
+  confirmRestore(): void {
+    const targets = this.restoreTargets();
+    // Crée les profils marqués « Créer » en conservant leur id d'origine.
+    for (const row of this.restoreRows() ?? []) {
+      if (targets[row.oldId] === CREATE_TARGET) {
+        const m = this.defaultMeta(row.oldId);
+        this.profiles.createWithId(row.oldId, m.name, m.img);
+      }
+    }
+    this.applyImport(this.restorePayload, targets);
+  }
+
+  /** Écrit les clés `ek.*` (en remappant les suffixes de profil) puis recharge l'application. */
+  private applyImport(data: Record<string, unknown>, targets: Record<string, string>): void {
+    for (const [k, v] of Object.entries(data)) {
+      if (!k.startsWith('ek.')) continue;
+      // La liste des profils est gérée via createWithId / les profils existants : on ne l'écrase pas.
+      if (k === 'ek.profiles') continue;
+      let key = k;
+      const m = k.match(/^ek\.(progress|settings)\.(.+)$/);
+      if (m) {
+        const t = targets[m[2]];
+        const newId = t && t !== CREATE_TARGET ? t : m[2];
+        key = `ek.${m[1]}.${newId}`;
+      }
+      try {
+        localStorage.setItem(key, String(v));
+      } catch {
+        /* quota : on continue au mieux */
+      }
+    }
+    location.reload();
+  }
+
+  private restoreLabel(id: string): string {
+    return `« ${this.defaultMeta(id).name} » (${id})`;
+  }
+
+  /** Prénom/avatar à utiliser pour un id de sauvegarde (sauvegarde > legacy vico/bille > id brut). */
+  private defaultMeta(id: string): { name: string; img: string } {
+    if (this.restoreMeta[id]) return this.restoreMeta[id];
+    if (id === 'vico') return { name: 'Victor', img: 'profiles/vico.png' };
+    if (id === 'bille') return { name: 'Bertille', img: 'profiles/bille.png' };
+    return { name: id, img: AVATARS[0].img };
   }
 
   changePin(input: HTMLInputElement): void {

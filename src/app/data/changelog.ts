@@ -6,7 +6,7 @@
  * APP_VERSION, puis aligner `android/app/build.gradle` (versionName = APP_VERSION,
  * incrémenter versionCode) et `package.json`.
  */
-export const APP_VERSION = '1.1.0';
+export const APP_VERSION = '1.2.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,15 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.2.0',
+    date: '2026-06-26',
+    changes: [
+      'Profils personnalisables : créer, renommer et supprimer un profil',
+      'Création d’un profil (prénom + avatar) depuis l’écran « Qui joue ? » ou les Réglages',
+      'Restauration d’une sauvegarde avec remappage des identifiants de profil',
+    ],
+  },
   {
     version: '1.1.0',
     date: '2026-06-26',

@@ -1,20 +1,27 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Profile, ProfileService } from '../../core/profile.service';
+import { ProfileEditor, ProfileDraft } from '../../shared/profile-editor/profile-editor';
 
 @Component({
   selector: 'app-profiles',
-  imports: [],
+  imports: [ProfileEditor],
   template: `
     <main class="picker">
       <img class="logo" src="englishkidz.png" alt="English Kids" />
       <h1 class="title big">Qui joue&nbsp;?</h1>
 
       <div class="avatars">
-        @for (p of profiles; track p.id) {
+        @for (p of profiles(); track p.id) {
           <button class="avatar anim-pop" (click)="choose(p)">
             <img [src]="p.img" [alt]="p.name" />
             <span class="who">{{ p.name }}</span>
+          </button>
+        }
+        @if (canAdd()) {
+          <button class="avatar add anim-pop" (click)="creating.set(true)" aria-label="Nouveau profil">
+            <span class="plus">＋</span>
+            <span class="who">Nouveau</span>
           </button>
         }
       </div>
@@ -24,6 +31,10 @@ import { Profile, ProfileService } from '../../core/profile.service';
         <span class="who small">Réglages</span>
       </button>
     </main>
+
+    @if (creating()) {
+      <app-profile-editor (save)="create($event)" (cancel)="creating.set(false)" />
+    }
   `,
   styles: [
     `
@@ -72,6 +83,18 @@ import { Profile, ProfileService } from '../../core/profile.service';
         border: 6px solid #fff;
         box-shadow: 0 10px 24px var(--c-shadow);
       }
+      .avatar.add .plus {
+        width: clamp(130px, 38vw, 180px);
+        height: clamp(130px, 38vw, 180px);
+        border-radius: 50%;
+        border: 6px dashed rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.18);
+        display: grid;
+        place-items: center;
+        font-size: 4rem;
+        color: #fff;
+        line-height: 1;
+      }
       .who {
         font-size: 1.8rem;
         font-weight: 700;
@@ -106,10 +129,25 @@ export class Profiles {
   private readonly router = inject(Router);
 
   readonly profiles = this.profileSvc.profiles;
+  readonly creating = signal(false);
+
+  /** Bouton « Nouveau » seulement si aucun profil n'existe (ensuite : ajout via les Réglages). */
+  canAdd(): boolean {
+    return this.profiles().length === 0;
+  }
 
   choose(p: Profile): void {
     this.profileSvc.select(p.id);
     this.router.navigateByUrl('/');
+  }
+
+  create(draft: ProfileDraft): void {
+    const created = this.profileSvc.addProfile(draft.name, draft.img);
+    this.creating.set(false);
+    if (created) {
+      this.profileSvc.select(created.id);
+      this.router.navigateByUrl('/');
+    }
   }
 
   openAdmin(): void {
