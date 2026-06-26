@@ -269,6 +269,7 @@ export const MODULES: LearnModule[] = [
     gradient: 'linear-gradient(150deg, #8e44ad, #4dabf7)',
     items: DAYS,
     listen: false,
+    kind: 'word',
   },
   {
     id: 'months',
@@ -278,6 +279,7 @@ export const MODULES: LearnModule[] = [
     gradient: 'linear-gradient(150deg, #ff6b6b, #8e44ad)',
     items: MONTHS,
     listen: false,
+    kind: 'word',
   },
   {
     id: 'instruments',

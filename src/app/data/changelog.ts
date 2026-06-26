@@ -42,7 +42,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '1.0.0',
     date: '2026-06-26',
     changes: [
-      'Profils enfants (Victor / Bertille) avec progression mémorisée par profil',
+      'Profils enfants avec progression mémorisée par profil',
       'Étoiles par thème (1/2/3) et « grand test » récompensé par une coupe',
       'Deux modes de quiz : lire le mot et écouter pour choisir l’image',
       'Réglages parent protégés par code : thèmes affichés, modes, vitesse de la voix',

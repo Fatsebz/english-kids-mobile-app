@@ -88,7 +88,7 @@ src/
     ├── app.ts / app.routes.ts  shell (bandeau profil + router-outlet) + routes (lazy, profileGuard)
     ├── core/
     │   ├── audio.service.ts     prononciation : TTS natif (Capacitor) | Web Speech (navigateur)
-    │   ├── profile.service.ts   profil courant (Vico/Bille), persisté localStorage (ek.profile)
+    │   ├── profile.service.ts   liste de profils (CRUD, ek.profiles) + profil courant (ek.profile)
     │   ├── progress.service.ts  progression PAR PROFIL (étoiles, grand test) + reset (ek.progress.<id>)
     │   ├── settings.service.ts  réglages PAR ENFANT (thèmes/modes affichés) + PIN admin (ek.settings.<id>)
     │   └── profile.guard.ts     redirige vers /profiles si aucun profil sélectionné
@@ -108,7 +108,7 @@ src/
     │   ├── theme-tile/          tuile d'un thème (visuel + étoiles/coupe), réutilisée accueil + groupe
     │   └── play-buttons/        boutons des modes activés (read/listen) + 🏆 grand test (par mode)
     └── pages/
-        ├── profiles/            sélection du profil (Vico / Bille + carte ⚙️ Réglages)
+        ├── profiles/            sélection du profil (+ création si liste vide, carte ⚙️ Réglages)
         ├── admin/               réglages (PIN) : thèmes/modes/vitesse par enfant, reset, sauvegarde
         ├── home/                tuiles de GROUPES + thèmes isolés (filtrés par réglages)
         ├── group/               GÉNÉRIQUE /g/:id : liste les thèmes d'un groupe

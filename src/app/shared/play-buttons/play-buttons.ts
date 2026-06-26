@@ -21,13 +21,11 @@ import { findTheme } from '../../data/themes';
         </a>
       }
 
-      @for (m of availableModes(); track m) {
-        @if (unlocked()) {
+      @if (unlocked()) {
+        @for (m of availableModes(); track m) {
           <a class="btn grand" [routerLink]="['/test', themeId(), m]">
             🏆 {{ testLabel(m) }}
           </a>
-        } @else {
-          <span class="btn grand locked">🔒 {{ testLabel(m) }}</span>
         }
       }
     </div>
@@ -56,10 +54,6 @@ import { findTheme } from '../../data/themes';
       .grand:active {
         transform: translateY(4px);
         box-shadow: 0 2px 0 #c9a200;
-      }
-      .grand.locked {
-        opacity: 0.55;
-        box-shadow: 0 6px 0 #c9a200;
       }
     `,
   ],

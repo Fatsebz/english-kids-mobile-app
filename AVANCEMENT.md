@@ -51,7 +51,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 
 ## Profils & progression
 - [x] **Profils personnalisables** : créer / renommer / supprimer (prénom ≤ 20 + avatar Vico/Bille), liste persistée `ek.profiles` ; création depuis « Qui joue ? » (si liste vide) ou les Réglages ; restauration de sauvegarde avec **remappage des id de profil**
-- [x] **Profils enfants** (Vico / Bille) : écran de sélection `/profiles`, avatars dans `public/profiles/` (320 px)
+- [x] **Profils enfants** : écran de sélection `/profiles`, avatars dans `public/profiles/` (320 px)
 - [x] `ProfileService` : profil courant persisté (`ek.profile`), `profileGuard` redirige vers `/profiles` si aucun
 - [x] Bandeau permanent en haut (avatar + prénom, tap → changer de profil)
 - [x] `ProgressService` : progression **par profil** persistée (`ek.progress.<id>`), réactive (signal)
