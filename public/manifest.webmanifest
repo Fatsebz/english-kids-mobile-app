@@ -1,12 +1,12 @@
 {
-  "name": "English Kids",
-  "short_name": "English Kids",
+  "name": "English Kidz",
+  "short_name": "English Kidz",
   "description": "Apprendre l'anglais en jouant : les nombres et les couleurs.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "lang": "fr",
-  "background_color": "#AEEEFA",
+  "background_color": "#6a8dff",
   "theme_color": "#6a8dff",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

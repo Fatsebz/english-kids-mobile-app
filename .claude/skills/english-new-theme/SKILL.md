@@ -1,9 +1,9 @@
 ---
 name: english-new-theme
-description: Ajoute un nouveau module d'apprentissage « emoji » à English Kids (ex. fruits, famille, vêtements, nourriture). Utilise le moteur générique existant — un fichier de données + une entrée dans le registre, aucun nouveau composant. Invoque ce skill quand l'utilisateur demande d'ajouter un thème/module/catégorie de vocabulaire anglais.
+description: Ajoute un nouveau module d'apprentissage « emoji » à English Kidz (ex. fruits, famille, vêtements, nourriture). Utilise le moteur générique existant — un fichier de données + une entrée dans le registre, aucun nouveau composant. Invoque ce skill quand l'utilisateur demande d'ajouter un thème/module/catégorie de vocabulaire anglais.
 ---
 
-# Ajouter un module « emoji » à English Kids
+# Ajouter un module « emoji » à English Kidz
 
 Ce skill ajoute un thème de vocabulaire (emoji + mot anglais + indice français + quiz) en s'appuyant
 sur le **moteur générique** déjà en place (`emoji-learn` / `emoji-game`, routes `/m/:id`). On ne crée

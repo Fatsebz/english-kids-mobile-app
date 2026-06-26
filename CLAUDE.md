@@ -1,4 +1,4 @@
-# English Kids 🎈
+# English Kidz 🎈
 
 Application mobile **Android** ludique pour enfants : apprendre l'anglais (**nombres de 1 à 20** et **couleurs**).
 Développée en **Angular 22** + **Capacitor 8**, packagée en **APK**. **100 % hors-ligne, aucun backend.**
@@ -45,13 +45,17 @@ En navigateur, l'audio utilise la **Web Speech API**. Sur appareil Android, c'es
 
 ### Build web
 ```powershell
-npx ng build         # sortie : dist/english-kids/browser
+npx ng build         # sortie : dist/english-kidz/browser
 ```
 
 ### Synchroniser avec Capacitor (après chaque build web)
 ```powershell
-npx ng build ; npx cap sync android
+npm run sync:android   # = ng build + strip-pwa + cap sync android
 ```
+> `sync:android` lance `resources/strip-pwa.mjs` **entre** le build et le sync : ce script retire de
+> `dist/` les assets purement web (favicons, `manifest.webmanifest`, `icon-192/512`, `apple-touch-icon`)
+> qui ne servent qu'au navigateur et alourdiraient inutilement l'APK (ils restent dans `public/` pour le
+> mode navigateur). Ne pas utiliser `npx cap sync` seul si on veut un APK allégé.
 
 ### Ouvrir dans Android Studio
 ```powershell
@@ -72,7 +76,7 @@ android/app/build/outputs/apk/debug/app-debug.apk
 Installer sur un appareil : `adb install -r app-debug.apk` (ou copier le fichier sur le téléphone et l'ouvrir).
 
 ### APK release signé (optionnel, pour distribution)
-1. Créer un keystore : `keytool -genkey -v -keystore english-kids.keystore -alias key0 -keyalg RSA -keysize 2048 -validity 10000`
+1. Créer un keystore : `keytool -genkey -v -keystore english-kidz.keystore -alias key0 -keyalg RSA -keysize 2048 -validity 10000`
 2. Renseigner `signingConfigs` dans `android/app/build.gradle`.
 3. `.\gradlew.bat assembleRelease` → `app-release.apk`.
 
@@ -186,25 +190,33 @@ l'URL (`/m/:id`), résout le module via `findModule(id)` (dans `data/modules.ts`
 ---
 
 ## Icône & splash screen
-Les images source sont dans **`resources/`** et les ressources Android sont générées avec
-**`@capacitor/assets`** (fond **bleu ciel #AEEEFA**, assorti à l'illustration) :
+L'**icône = logo English Kidz centré sur fond bleu uni #6a8dff** (haut du dégradé du thème, derrière le logo ; source `public/englishkidz.webp`
+recomposée en carré 1024² par `resources/_gen-icon.mjs`). Ce même script génère aussi les **favicons /
+icônes web** dans `public/` (`favicon-16/32.png`, `apple-touch-icon.png`, `icon-192/512.png`) — retirées
+de l'APK au build (voir `strip-pwa`). Les ressources Android sont générées avec **`@capacitor/assets`** :
 
 | Fichier source (`resources/`) | Rôle |
 |------|------|
-| `Bicon_1024.png` | image fournie (icône carrée 1024²) |
-| `icon-only.png`, `icon-foreground.png` | icône (legacy + premier plan adaptatif) |
-| `icon-background.png` | fond adaptatif (bleu ciel uni) |
-| `splash.png`, `splash-dark.png` | splash 2732² (illustration centrée sur fond uni) |
+| `icon-only.png` | icône legacy (logo sur bleu, carré plein) |
+| `icon-foreground.png` | premier plan adaptatif (logo ~72 %, fond transparent) |
+| `icon-background.png` | fond adaptatif (bleu uni #6a8dff) |
+| `splash.png`, `splash-dark.png` | **bleu uni** (plus d'illustration plein écran) |
 
-Régénérer après modification d'une image source :
+Régénérer les sources d'icône (logo sur bleu) puis les ressources Android :
 ```powershell
-npx @capacitor/assets generate --android --assetPath resources \
-  --iconBackgroundColor "#AEEEFA" --iconBackgroundColorDark "#1B2A4A" \
-  --splashBackgroundColor "#AEEEFA" --splashBackgroundColorDark "#1B2A4A"
+# 1) (re)générer les sources carrées (logo centré sur bleu) depuis public/englishkidz.webp :
+node resources/_gen-icon.mjs
+# 2) générer les ressources Android :
+npx @capacitor/assets generate --android --assetPath resources `
+  --iconBackgroundColor "#6a8dff" --iconBackgroundColorDark "#455ca6" `
+  --splashBackgroundColor "#6a8dff" --splashBackgroundColorDark "#455ca6"
 ```
-> L'app étant verrouillée en portrait, les variantes `drawable-land*` générées sont supprimées
-> (inutiles) pour alléger l'APK. Sur **Android 12+**, l'écran de démarrage système affiche l'icône
-> centrée sur le fond ; le splash plein-écran s'affiche via `@drawable/splash`.
+> **Plus de splash plein écran** (gain APK ~10 Mo) : tous les `drawable*/splash.png` sont supprimés et le
+> thème de lancement `AppTheme.NoActionBarLaunch` (`res/values/styles.xml`) utilise un **fond bleu uni**
+> (`@color/splashBackground`, défini dans `res/values/colors.xml`) + `windowSplashScreenAnimatedIcon`
+> (l'icône). Sur **Android 12+**, le système affiche l'icône centrée sur ce fond. Après chaque
+> régénération `@capacitor/assets`, **réappliquer** ces deux points (le générateur réécrit `styles.xml`
+> vers `@drawable/splash` et recrée les `drawable-land*` / `splash.png`).
 
 ## Versionnage & changelog
 - **Source unique** : `src/app/data/changelog.ts` (`APP_VERSION` + `CHANGELOG`). Affiché dans l'écran
@@ -219,8 +231,8 @@ npx @capacitor/assets generate --android --assetPath resources \
 ## Notes techniques
 - Angular 22 : composants **standalone**, **signals**, control flow `@if`/`@for`. Fichiers nommés
   `app.ts`, `home.ts`, etc. (nouvelle convention, sans suffixe `.component`).
-- `webDir` (capacitor.config.ts) = `dist/english-kids/browser` (sortie du builder `@angular/build:application`).
+- `webDir` (capacitor.config.ts) = `dist/english-kidz/browser` (sortie du builder `@angular/build:application`).
 - Orientation **portrait** verrouillée dans `AndroidManifest.xml` (`android:screenOrientation="portrait"`).
-- appId : `com.fatsebz.englishkids` — nom : **English Kids**.
+- appId : `com.fatsebz.englishkidz` — nom : **English Kidz**.
 
 Voir **AVANCEMENT.md** pour le suivi des tâches.

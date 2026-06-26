@@ -1,4 +1,4 @@
-# Avancement — English Kids
+# Avancement — English Kidz
 
 Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 
@@ -8,7 +8,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Scaffolder le projet **Angular 22** (standalone, SCSS, routing)
 - [x] Installer **Capacitor 8** + `@capacitor/android`
 - [x] Installer plugins : `@capacitor-community/text-to-speech` (TTS), `canvas-confetti`, `@fontsource/fredoka`
-- [x] `npx cap init` (appId `com.fatsebz.englishkids`, webDir `dist/english-kids/browser`)
+- [x] `npx cap init` (appId `com.fatsebz.englishkidz`, webDir `dist/english-kidz/browser`)
 
 ## UI & socle
 - [x] Thème enfant global (`styles.scss`) : couleurs vives, gros boutons ≥ 72px, police Fredoka locale, animations (pop/bounce/shake)
@@ -84,7 +84,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Rendu **par kind d'élément** (chiffres/couleurs/emojis/mots mélangeables dans un même quiz)
 
 ## Android / Build
-- [x] `ng build` OK (sortie `dist/english-kids/browser`)
+- [x] `ng build` OK (sortie `dist/english-kidz/browser`)
 - [x] Vérifier 100 % hors-ligne (police bundlée, aucune URL distante)
 - [x] `npx cap add android`
 - [x] Orientation **portrait** verrouillée dans le manifest

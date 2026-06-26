@@ -8,7 +8,7 @@ import { ProfileEditor, ProfileDraft } from '../../shared/profile-editor/profile
   imports: [ProfileEditor],
   template: `
     <main class="picker">
-      <img class="logo" src="englishkidz.png" alt="English Kids" />
+      <img class="logo" src="englishkidz.webp" alt="English Kidz" />
       <h1 class="title big">Qui joue&nbsp;?</h1>
 
       <div class="avatars">

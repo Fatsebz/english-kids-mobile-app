@@ -15,8 +15,8 @@ export interface Avatar {
   img: string;
 }
 export const AVATARS: Avatar[] = [
-  { key: 'vico', img: 'profiles/vico.png' },
-  { key: 'bille', img: 'profiles/bille.png' },
+  { key: 'vico', img: 'profiles/vico.webp' },
+  { key: 'bille', img: 'profiles/bille.webp' },
 ];
 
 const CURRENT_KEY = 'ek.profile';

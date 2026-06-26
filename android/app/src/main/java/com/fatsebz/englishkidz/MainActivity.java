@@ -1,4 +1,4 @@
-package com.fatsebz.englishkids;
+package com.fatsebz.englishkidz;
 
 import com.getcapacitor.BridgeActivity;
 

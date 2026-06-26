@@ -689,7 +689,7 @@ export class Admin {
         if (v !== null) data[k] = v;
       }
     }
-    const json = JSON.stringify({ app: 'english-kids', version: 1, data });
+    const json = JSON.stringify({ app: 'english-kidz', version: 1, data });
     this.backupText.set(json);
     this.backupError.set('');
     this.backupMsg.set('Sauvegarde générée : copie ce texte et garde-le (un fichier .json a aussi été proposé au téléchargement).');
@@ -707,7 +707,7 @@ export class Admin {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'english-kids-sauvegarde.json';
+      a.download = 'english-kidz-sauvegarde.json';
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -730,7 +730,7 @@ export class Admin {
     let data: Record<string, unknown>;
     try {
       const parsed = JSON.parse(raw) as { app?: string; data?: Record<string, unknown> };
-      if (parsed?.app !== 'english-kids' || !parsed.data || typeof parsed.data !== 'object') {
+      if (parsed?.app !== 'english-kidz' || !parsed.data || typeof parsed.data !== 'object') {
         this.backupError.set('Code de sauvegarde invalide.');
         return;
       }
@@ -834,8 +834,8 @@ export class Admin {
   /** Prénom/avatar à utiliser pour un id de sauvegarde (sauvegarde > legacy vico/bille > id brut). */
   private defaultMeta(id: string): { name: string; img: string } {
     if (this.restoreMeta[id]) return this.restoreMeta[id];
-    if (id === 'vico') return { name: 'Victor', img: 'profiles/vico.png' };
-    if (id === 'bille') return { name: 'Bertille', img: 'profiles/bille.png' };
+    if (id === 'vico') return { name: 'Victor', img: 'profiles/vico.webp' };
+    if (id === 'bille') return { name: 'Bertille', img: 'profiles/bille.webp' };
     return { name: id, img: AVATARS[0].img };
   }
 

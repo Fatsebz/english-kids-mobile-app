@@ -6,7 +6,7 @@
  * APP_VERSION, puis aligner `android/app/build.gradle` (versionName = APP_VERSION,
  * incrémenter versionCode) et `package.json`.
  */
-export const APP_VERSION = '1.2.0';
+export const APP_VERSION = '1.2.1';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,16 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.2.1',
+    date: '2026-06-26',
+    changes: [
+      'Application allégée : taille d’installation réduite (~16 → ~4 Mo)',
+      'Nouvelle icône : le logo English Kidz sur fond bleu',
+      'Démarrage simplifié (écran d’ouverture épuré)',
+      'Renommage en « English Kidz » (cohérence avec le logo)',
+    ],
+  },
   {
     version: '1.2.0',
     date: '2026-06-26',

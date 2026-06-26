@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">English Kids</string>
-    <string name="title_activity_main">English Kids</string>
-    <string name="package_name">com.fatsebz.englishkids</string>
-    <string name="custom_url_scheme">com.fatsebz.englishkids</string>
+    <string name="app_name">English Kidz</string>
+    <string name="title_activity_main">English Kidz</string>
+    <string name="package_name">com.fatsebz.englishkidz</string>
+    <string name="custom_url_scheme">com.fatsebz.englishkidz</string>
 </resources>

@@ -15,7 +15,7 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
   imports: [RouterLink, ThemeTile],
   template: `
     <main class="screen home">
-      <img class="logo" src="englishkidz.png" alt="English Kids" />
+      <img class="logo" src="englishkidz.webp" alt="English Kidz" />
       <p class="subtitle">Apprends l'anglais en jouant&nbsp;!</p>
 
       <div class="tiles">

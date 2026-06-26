@@ -1,10 +1,11 @@
 {
-  "name": "english-kids",
-  "version": "1.2.0",
+  "name": "english-kidz",
+  "version": "1.2.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "sync:android": "ng build && node resources/strip-pwa.mjs && cap sync android",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

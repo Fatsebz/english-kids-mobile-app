@@ -16,7 +16,10 @@
     </style>
 
 
+    <!-- Plus de splash plein écran : fond bleu uni + icône (système Android 12+). -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
-        <item name="android:background">@drawable/splash</item>
+        <item name="android:background">@color/splashBackground</item>
+        <item name="windowSplashScreenBackground">@color/splashBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
     </style>
 </resources>

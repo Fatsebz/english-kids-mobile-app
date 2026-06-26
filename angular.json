@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "english-kids": {
+    "english-kidz": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -62,10 +62,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "english-kids:build:production"
+              "buildTarget": "english-kidz:build:production"
             },
             "development": {
-              "buildTarget": "english-kids:build:development"
+              "buildTarget": "english-kidz:build:development"
             }
           },
           "defaultConfiguration": "development"

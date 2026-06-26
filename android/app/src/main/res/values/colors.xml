@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fond de l'écran de démarrage (assorti au fond de l'icône). -->
+    <color name="splashBackground">#6a8dff</color>
+</resources>
