@@ -1,0 +1,12 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="sand">
+  <path d="M4 66 q22 -18 46 -7 q26 12 46 -3 V96 H4 Z" fill="#f4d27a" />
+  <path d="M4 76 q24 -11 46 -3 q24 8 46 -3 V96 H4 Z" fill="#e7be5e" />
+  <g fill="#caa24a">
+    <circle cx="26" cy="82" r="1.7" />
+    <circle cx="44" cy="86" r="1.7" />
+    <circle cx="62" cy="83" r="1.7" />
+    <circle cx="78" cy="87" r="1.7" />
+    <circle cx="36" cy="90" r="1.7" />
+    <circle cx="70" cy="91" r="1.7" />
+  </g>
+</svg>

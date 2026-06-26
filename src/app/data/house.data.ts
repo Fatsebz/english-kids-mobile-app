@@ -6,6 +6,7 @@ export const HOUSE: EmojiItem[] = [
   { emoji: '🛏️', word: 'bed', fr: 'lit' },
   { emoji: '🚪', word: 'door', fr: 'porte' },
   { emoji: '🪑', word: 'chair', fr: 'chaise' },
+  { img: 'icons/table.svg', word: 'table', fr: 'table' },
   { emoji: '🛋️', word: 'sofa', fr: 'canapé' },
   { emoji: '🪟', word: 'window', fr: 'fenêtre' },
   { emoji: '🚽', word: 'toilet', fr: 'toilettes' },

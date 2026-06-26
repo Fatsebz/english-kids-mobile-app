@@ -18,8 +18,12 @@ Construire une liste de **5 à 20 items** adaptés à de jeunes enfants. Pour ch
 `fr` (traduction). Contraintes impératives :
 
 - **Emojis sûrs hors-ligne** : n'utiliser que des emojis standard rendus par la police système (Noto sur
-  Android). Éviter les emojis très récents, les séquences ZWJ exotiques ou les drapeaux peu courants — s'il
-  n'existe pas d'emoji clair et univoque pour un mot, **retirer ce mot** plutôt que forcer un emoji ambigu.
+  Android). Éviter les emojis très récents, les séquences ZWJ exotiques ou les drapeaux peu courants.
+- **Concept sans emoji clair, ou emoji ambigu** (ex. *fork*, *eraser*, *table*, ou *witch* trop proche de
+  *wizard*) : au lieu de retirer le mot, fournir une **icône SVG bundlée**. L'item utilise alors `img` au
+  lieu de `emoji` : `{ img: 'icons/fork.svg', word: 'fork', fr: 'fourchette' }`. Déposer le fichier dans
+  **`public/icons/`** (SVG simple, viewBox `0 0 100 100`, couleurs vives, lisible en petit). C'est rendu
+  partout (apprentissage, quiz, grand test) et reste 100 % hors-ligne. Garder l'emoji pour tous les autres.
 - **Un emoji = un sens clair** pour un enfant (le visuel doit suffire à deviner le mot).
 - **Anglais enseigné** : forme de base, minuscule (ex. `apple`, `eat`). FR en minuscule aussi.
 - Viser ~8–12 items (qualité > quantité).

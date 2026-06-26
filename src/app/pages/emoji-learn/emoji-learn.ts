@@ -20,9 +20,15 @@ import { PlayButtons } from '../../shared/play-buttons/play-buttons';
         <app-play-buttons [themeId]="id ?? ''" />
 
         <div class="stage card" (click)="say(cur)">
-          <div class="pic anim-pop" [attr.key]="cur.word">{{ cur.emoji }}</div>
+          @if (isWord) {
+            <div class="word-visual anim-pop">{{ cur.fr }}</div>
+          } @else if (cur.img) {
+            <img class="pic-img anim-pop" [src]="cur.img" [alt]="cur.word" />
+          } @else {
+            <div class="pic anim-pop" [attr.key]="cur.word">{{ cur.emoji }}</div>
+          }
           <div class="name">{{ cur.word }}</div>
-          <div class="fr">{{ cur.fr }}</div>
+          @if (!isWord) { <div class="fr">{{ cur.fr }}</div> }
           <button class="btn-round speak" (click)="say(cur); $event.stopPropagation()" aria-label="Écouter">
             🔊
           </button>
@@ -36,7 +42,9 @@ import { PlayButtons } from '../../shared/play-buttons/play-buttons';
               (click)="select(it)"
               [attr.aria-label]="it.word"
             >
-              {{ it.emoji }}
+              @if (isWord) { <span class="tile-word">{{ it.fr }}</span> }
+              @else if (it.img) { <img class="tile-img" [src]="it.img" [alt]="it.word" /> }
+              @else { {{ it.emoji }} }
             </button>
           }
         </div>
@@ -57,6 +65,30 @@ import { PlayButtons } from '../../shared/play-buttons/play-buttons';
       .pic {
         font-size: clamp(5rem, 28vw, 8.5rem);
         line-height: 1;
+      }
+      .pic-img {
+        width: clamp(110px, 38vw, 170px);
+        height: clamp(110px, 38vw, 170px);
+        object-fit: contain;
+      }
+      .tile-img {
+        width: 64%;
+        height: 64%;
+        object-fit: contain;
+      }
+      .word-visual {
+        font-size: clamp(2.2rem, 11vw, 3.6rem);
+        font-weight: 700;
+        text-transform: capitalize;
+        color: var(--c-primary);
+        text-align: center;
+      }
+      .tile-word {
+        font-size: clamp(0.8rem, 3.4vw, 1rem);
+        font-weight: 700;
+        text-transform: capitalize;
+        padding: 0 4px;
+        line-height: 1.1;
       }
       .name {
         font-size: clamp(2rem, 10vw, 2.8rem);
@@ -87,6 +119,9 @@ import { PlayButtons } from '../../shared/play-buttons/play-buttons';
         cursor: pointer;
         box-shadow: 0 4px 0 rgba(0, 0, 0, 0.16);
         transition: transform 0.08s ease, box-shadow 0.08s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .etile:active {
         transform: translateY(3px);
@@ -108,6 +143,7 @@ export class EmojiLearn {
 
   readonly title = this.module?.title ?? '';
   readonly items = this.module?.items ?? [];
+  readonly isWord = this.module?.kind === 'word';
   readonly current = signal<EmojiItem>(this.items[0]);
 
   constructor() {

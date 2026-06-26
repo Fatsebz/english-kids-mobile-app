@@ -1,0 +1,13 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="goldfish">
+  <!-- queue -->
+  <path d="M30 50 L10 33 L10 67 Z" fill="#ff7a1a" />
+  <!-- nageoire dorsale -->
+  <path d="M48 32 q10 -10 20 -4 q-8 4 -10 12 z" fill="#ff6a00" />
+  <!-- corps -->
+  <ellipse cx="56" cy="52" rx="32" ry="21" fill="#ff8c1a" />
+  <!-- œil -->
+  <circle cx="74" cy="47" r="4.5" fill="#ffffff" />
+  <circle cx="75" cy="47" r="2.2" fill="#2b2d42" />
+  <!-- bouche -->
+  <path d="M87 52 q4 2.5 0 6" fill="none" stroke="#e06600" stroke-width="2.2" stroke-linecap="round" />
+</svg>

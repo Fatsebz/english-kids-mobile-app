@@ -74,6 +74,11 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] **Sauvegarde / Restauration** de la progression (export/import JSON) dans l'Admin
 - [x] **Tests unitaires** (Vitest) : `quiz-engine` (pickTarget/choicesFor), `ProgressService`, `SettingsService`
 - [x] **Feedback immédiat des étoiles** : célébration spéciale + fanfare quand un palier (1/2/3 ⭐) est franchi en quiz
+- [x] À la 3ᵉ étoile : redirection vers la page du thème (boutons grand test disponibles)
+- [x] **Icônes SVG bundlées** (`img` sur un item) pour les concepts sans emoji clair : `fork`, `eraser`, `table`, `witch` (sorcière entière), `plate` (assiette seule), `sea`, `sand`, `goldfish`, `parakeet`
+- [x] Module **Pets** (animaux domestiques) + **Farm** renommé ; **Forest** (forêt) ; **Seasons** (saisons)
+- [x] Module **Time** (unités de temps, kind `word` : visuel = mot FR, lecture seule)
+- [x] **Groupes de thèmes** (`groups.ts`) : Animaux / Concepts / Temps → sous-écran `/g/:id` ; tuile réutilisable `theme-tile`
 
 ## Android / Build
 - [x] `ng build` OK (sortie `dist/english-kids/browser`)

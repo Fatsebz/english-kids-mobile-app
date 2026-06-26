@@ -1,0 +1,6 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="sea">
+  <path d="M6 46 q12 -9 24 0 q12 9 24 0 q12 -9 24 0 q5 4 10 1 V94 H6 Z" fill="#2f9fd6" />
+  <path d="M6 60 q12 -7 24 0 q12 7 24 0 q12 -7 24 0 q5 3 10 0 V94 H6 Z" fill="#1f7fb8" />
+  <path d="M14 52 q6 -4 12 0" fill="none" stroke="#bfe3f7" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M62 52 q6 -4 12 0" fill="none" stroke="#bfe3f7" stroke-width="2.2" stroke-linecap="round" />
+</svg>

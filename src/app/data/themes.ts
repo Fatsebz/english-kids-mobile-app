@@ -2,7 +2,7 @@ import { NUMBERS } from './numbers.data';
 import { COLORS } from './colors.data';
 import { MODULES } from './modules';
 
-export type ThemeKind = 'number' | 'color' | 'emoji';
+export type ThemeKind = 'number' | 'color' | 'emoji' | 'word';
 
 /** Élément normalisé d'un thème, exploitable par l'accueil et le grand test. */
 export interface ThemeEntry {
@@ -12,6 +12,8 @@ export interface ThemeEntry {
   label: string;
   /** Visuel à afficher dans le prompt : chiffre, couleur (hex) ou emoji. */
   display: string;
+  /** Icône SVG bundlée (prioritaire sur `display`/emoji) pour les concepts sans emoji. */
+  img?: string;
   /** Couleurs claires uniquement : ajoute une bordure. */
   light?: boolean;
 }
@@ -61,10 +63,14 @@ const emojiThemes: Theme[] = MODULES.map((m) => ({
   fr: m.fr,
   tileEmoji: m.tileEmoji,
   gradient: m.gradient,
-  kind: 'emoji' as const,
+  kind: m.kind === 'word' ? ('word' as const) : ('emoji' as const),
   learnPath: `/m/${m.id}`,
   listen: m.listen ?? true,
-  items: m.items.map((it) => ({ key: it.word, label: it.word, display: it.emoji })),
+  items: m.items.map((it) =>
+    m.kind === 'word'
+      ? { key: it.word, label: it.word, display: it.fr } // visuel = mot français
+      : { key: it.word, label: it.word, display: it.emoji ?? '', img: it.img },
+  ),
 }));
 
 /** Tous les thèmes, dans l'ordre d'affichage de l'accueil. */

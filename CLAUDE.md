@@ -95,30 +95,39 @@ src/
     ├── data/
     │   ├── numbers.data.ts      1..20 + mot anglais
     │   ├── colors.data.ts       11 couleurs (name EN, fr, hex)
-    │   ├── emoji-item.ts        interface EmojiItem { emoji, word (EN), fr }
+    │   ├── emoji-item.ts        interface EmojiItem { emoji? | img?, word (EN), fr } (img = SVG bundlé)
     │   ├── animals/body/…       11 fichiers <thème>.data.ts (EmojiItem[])
-    │   ├── modules.ts           registre MODULES + findModule() (pilote les modules emoji)
-    │   └── themes.ts            registre UNIFIÉ THEMES (numbers+colors+emoji) → accueil, quiz, grand test
+    │   ├── modules.ts           registre MODULES + findModule() (kind 'emoji' | 'word')
+    │   ├── themes.ts            registre UNIFIÉ THEMES (numbers+colors+emoji+word) → accueil, quiz, grand test
+    │   └── groups.ts            GROUPS : regroupe des thèmes (Animals, Concepts, Time) → sous-écran /g/:id
     ├── shared/
     │   ├── quiz-engine.ts       shuffle, buildQuestion, pickTarget (priorité non-maîtrisés), choicesFor
-    │   ├── celebration/         overlay confettis + message (canvas-confetti, générique)
-    │   ├── profile-header/      bandeau permanent (avatar + prénom), tap → /profiles
-    │   └── play-buttons/        boutons des modes activés (read/listen) + 🏆 grand test
+    │   ├── celebration/         overlay confettis + message + fanfare (canvas-confetti / Web Audio)
+    │   ├── profile-header/      bandeau permanent (avatar + prénom + drapeau UK), tap → /profiles
+    │   ├── audio-warning/       bannière si voix anglaise indisponible
+    │   ├── theme-tile/          tuile d'un thème (visuel + étoiles/coupe), réutilisée accueil + groupe
+    │   └── play-buttons/        boutons des modes activés (read/listen) + 🏆 grand test (par mode)
     └── pages/
         ├── profiles/            sélection du profil (Vico / Bille + carte ⚙️ Réglages)
-        ├── admin/               réglages (PIN) : thèmes/modes par enfant + réinitialisation
-        ├── home/                tuiles (THEMES filtrés par réglages) + 3 étoiles / coupe par carte
-        ├── numbers-learn/       module Numbers (stage + grille + <app-play-buttons>)
-        ├── colors-learn/        module Colors
-        ├── emoji-learn/         GÉNÉRIQUE : tout module /m/:id
+        ├── admin/               réglages (PIN) : thèmes/modes/vitesse par enfant, reset, sauvegarde
+        ├── home/                tuiles de GROUPES + thèmes isolés (filtrés par réglages)
+        ├── group/               GÉNÉRIQUE /g/:id : liste les thèmes d'un groupe
+        ├── numbers-learn / colors-learn / emoji-learn : écrans « Apprendre »
         ├── quiz/                GÉNÉRIQUE /quiz/:id/:mode (read | listen), tous kinds
-        └── grand-test/          GÉNÉRIQUE /test/:id : tous les éléments sans erreur → coupe
+        └── grand-test/          GÉNÉRIQUE /test/:id/:mode : tous les éléments sans erreur → coupe
 ```
 
 ### Routes
-`/profiles` (sélection) · `/admin` (réglages, PIN) · `/` · `/numbers` · `/colors` · `/m/:id`
-· `/quiz/:id/:mode` (mode = `read` | `listen`) · `/test/:id` (grand test)
+`/profiles` · `/admin` · `/` · `/g/:id` (groupe) · `/numbers` · `/colors` · `/m/:id`
+· `/quiz/:id/:mode` (`read` | `listen`) · `/test/:id/:mode` (grand test)
 Toutes les routes de **contenu** sont protégées par `profileGuard` ; `/profiles` et `/admin` ne le sont pas.
+
+### Groupes & types de thème
+- **Groupes** (`data/groups.ts`) : quand plusieurs thèmes vont ensemble (Animaux : Farm/Pets/Zoo/Forest ;
+  Concepts : Numbers/Letters/Shapes ; Temps : Days/Months/Time/Seasons), l'accueil affiche une **tuile de
+  groupe** → sous-écran `/g/:id`. Les thèmes hors groupe restent en tuiles directes.
+- **Kind `word`** (module `kind: 'word'`, ex. *Time*) : pas d'emoji, le **visuel = mot français** et l'enfant
+  choisit le mot anglais (traduction). Toujours `listen: false`.
 
 ### Profils, progression & réglages
 - **Profils** : `ProfileService` gère le profil courant (Vico/Bille, avatars `public/profiles/*.png`),
@@ -150,6 +159,10 @@ l'URL (`/m/:id`), résout le module via `findModule(id)` (dans `data/modules.ts`
 
 > Les emojis sont rendus par la police emoji du système (Noto sur Android) : **aucune ressource distante**,
 > compatible 100 % hors-ligne. Si un glyphe manque sur un vieil appareil, remplacer l'emoji dans le `.data.ts`.
+
+> **Concept sans emoji clair (ou ambigu)** : un item peut utiliser `img: 'icons/<nom>.svg'` (au lieu de
+> `emoji`) avec un SVG bundlé dans `public/icons/`. Rendu partout (apprentissage, quiz, grand test),
+> 100 % hors-ligne. Exemples fournis : `fork`, `eraser`, `table`, `witch` (distincte du `wizard` emoji).
 
 ---
 

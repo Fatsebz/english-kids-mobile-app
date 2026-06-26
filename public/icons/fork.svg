@@ -1,0 +1,10 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="fork">
+  <g fill="#9aa0a6">
+    <rect x="44" y="40" width="12" height="52" rx="6" />
+    <rect x="30" y="10" width="6" height="34" rx="3" />
+    <rect x="42" y="10" width="6" height="34" rx="3" />
+    <rect x="54" y="10" width="6" height="34" rx="3" />
+    <rect x="66" y="10" width="6" height="34" rx="3" />
+    <rect x="30" y="38" width="42" height="10" rx="5" />
+  </g>
+</svg>

@@ -1,5 +1,8 @@
 import { EmojiItem } from './emoji-item';
 import { ANIMALS } from './animals.data';
+import { PETS } from './pets.data';
+import { FOREST } from './forest.data';
+import { SEASONS } from './seasons.data';
 import { BODY } from './body.data';
 import { ACTIONS } from './actions.data';
 import { WEATHER } from './weather.data';
@@ -23,6 +26,7 @@ import { BEACH } from './beach.data';
 import { DAYS } from './days.data';
 import { MONTHS } from './months.data';
 import { INSTRUMENTS } from './instruments.data';
+import { TIMEUNITS } from './time.data';
 
 /** Décrit un module d'apprentissage illustré par des emojis (piloté par les données). */
 export interface LearnModule {
@@ -44,6 +48,11 @@ export interface LearnModule {
    * Par défaut `true`.
    */
   listen?: boolean;
+  /**
+   * `'word'` : pas d'emoji, le visuel est le **mot français** (`fr`) → exercice de
+   * traduction FR→EN (ex. unités de temps). Par défaut `'emoji'`.
+   */
+  kind?: 'emoji' | 'word';
 }
 
 /**
@@ -53,11 +62,35 @@ export interface LearnModule {
 export const MODULES: LearnModule[] = [
   {
     id: 'animals',
-    title: 'Animals',
-    fr: 'Les animaux',
+    title: 'Farm',
+    fr: 'La ferme',
     tileEmoji: '🐄',
     gradient: 'linear-gradient(150deg, #2ec27e, #ffd23f)',
     items: ANIMALS,
+  },
+  {
+    id: 'pets',
+    title: 'Pets',
+    fr: 'Animaux domestiques',
+    tileEmoji: '🐶',
+    gradient: 'linear-gradient(150deg, #ff8c1a, #ff6fae)',
+    items: PETS,
+  },
+  {
+    id: 'forest',
+    title: 'Forest',
+    fr: 'La forêt',
+    tileEmoji: '🦊',
+    gradient: 'linear-gradient(150deg, #2ec27e, #8b5a2b)',
+    items: FOREST,
+  },
+  {
+    id: 'seasons',
+    title: 'Seasons',
+    fr: 'Les saisons',
+    tileEmoji: '🍂',
+    gradient: 'linear-gradient(150deg, #ff8e53, #4dabf7)',
+    items: SEASONS,
   },
   {
     id: 'body',
@@ -244,6 +277,16 @@ export const MODULES: LearnModule[] = [
     tileEmoji: '🎸',
     gradient: 'linear-gradient(150deg, #e63946, #4dabf7)',
     items: INSTRUMENTS,
+  },
+  {
+    id: 'timeunits',
+    title: 'Time',
+    fr: "L'heure",
+    tileEmoji: '⏰',
+    gradient: 'linear-gradient(150deg, #4dabf7, #8e44ad)',
+    items: TIMEUNITS,
+    listen: false,
+    kind: 'word',
   },
 ];
 

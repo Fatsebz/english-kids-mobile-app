@@ -3,7 +3,7 @@ import { EmojiItem } from './emoji-item';
 /** Les contes de fées, en anglais. */
 export const FAIRYTALE: EmojiItem[] = [
   { emoji: '🧙‍♂️', word: 'wizard', fr: 'magicien' },
-  { emoji: '🧙‍♀️', word: 'witch', fr: 'sorcière' },
+  { img: 'icons/witch.svg', word: 'witch', fr: 'sorcière' },
   { emoji: '👸', word: 'princess', fr: 'princesse' },
   { emoji: '🤴', word: 'prince', fr: 'prince' },
   { emoji: '🏰', word: 'castle', fr: 'château' },

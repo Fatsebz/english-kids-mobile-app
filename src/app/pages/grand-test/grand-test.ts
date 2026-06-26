@@ -50,7 +50,10 @@ type Mode = 'read' | 'listen';
                   @case ('color') {
                     <span class="swatch" [class.bordered]="c.light" [style.background]="c.display"></span>
                   }
-                  @default { <span class="pic">{{ c.display }}</span> }
+                  @default {
+                    @if (c.img) { <img class="choice-img" [src]="c.img" [alt]="c.label" /> }
+                    @else { <span class="pic">{{ c.display }}</span> }
+                  }
                 }
               </button>
             }
@@ -62,7 +65,11 @@ type Mode = 'read' | 'listen';
               @case ('color') {
                 <div class="swatch big anim-pop" [class.bordered]="cur.light" [style.background]="cur.display" [attr.data-k]="cur.key"></div>
               }
-              @default { <div class="pic anim-pop" [attr.data-k]="cur.key">{{ cur.display }}</div> }
+              @case ('word') { <div class="word-visual anim-pop">{{ cur.display }}</div> }
+              @default {
+                @if (cur.img) { <img class="pic-img anim-pop" [src]="cur.img" [alt]="cur.label" /> }
+                @else { <div class="pic anim-pop" [attr.data-k]="cur.key">{{ cur.display }}</div> }
+              }
             }
           </div>
 
@@ -139,6 +146,24 @@ type Mode = 'read' | 'listen';
         font-size: clamp(5rem, 30vw, 9rem);
         line-height: 1;
       }
+      .pic-img {
+        width: clamp(120px, 40vw, 200px);
+        height: clamp(120px, 40vw, 200px);
+        object-fit: contain;
+      }
+      .word-visual {
+        font-size: clamp(2.4rem, 12vw, 4rem);
+        font-weight: 700;
+        text-transform: capitalize;
+        text-align: center;
+        color: var(--c-blue);
+        padding: 0 12px;
+      }
+      .choice-img {
+        width: 68%;
+        height: 68%;
+        object-fit: contain;
+      }
       .swatch {
         width: clamp(58px, 20vw, 90px);
         height: clamp(58px, 20vw, 90px);
@@ -160,6 +185,10 @@ type Mode = 'read' | 'listen';
       }
       .choice {
         text-transform: capitalize;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
       }
       .choices.images .img-choice {
         border: none;

@@ -10,8 +10,6 @@ export const ANIMALS: EmojiItem[] = [
   { emoji: '🦆', word: 'duck', fr: 'canard' },
   { emoji: '🐐', word: 'goat', fr: 'chèvre' },
   { emoji: '🐰', word: 'rabbit', fr: 'lapin' },
-  { emoji: '🐕', word: 'dog', fr: 'chien' },
-  { emoji: '🐈', word: 'cat', fr: 'chat' },
   { emoji: '🫏', word: 'donkey', fr: 'âne' },
   { emoji: '🐓', word: 'rooster', fr: 'coq' },
 ];

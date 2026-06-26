@@ -28,6 +28,11 @@ export const routes: Routes = [
       import('./pages/colors-learn/colors-learn').then((m) => m.ColorsLearn),
   },
   {
+    path: 'g/:id',
+    canActivate: [profileGuard],
+    loadComponent: () => import('./pages/group/group').then((m) => m.Group),
+  },
+  {
     path: 'm/:id',
     canActivate: [profileGuard],
     loadComponent: () =>

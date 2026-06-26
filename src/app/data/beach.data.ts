@@ -4,6 +4,8 @@ import { EmojiItem } from './emoji-item';
 export const BEACH: EmojiItem[] = [
   { emoji: '🏖️', word: 'beach', fr: 'plage' },
   { emoji: '🌊', word: 'wave', fr: 'vague' },
+  { img: 'icons/sea.svg', word: 'sea', fr: 'mer' },
+  { img: 'icons/sand.svg', word: 'sand', fr: 'sable' },
   { emoji: '🐚', word: 'shell', fr: 'coquillage' },
   { emoji: '🌴', word: 'palm tree', fr: 'palmier' },
   { emoji: '🕶️', word: 'sunglasses', fr: 'lunettes' },
