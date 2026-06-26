@@ -12,4 +12,7 @@ export const BODY: EmojiItem[] = [
   { emoji: '💪', word: 'arm', fr: 'bras' },
   { emoji: '🦷', word: 'tooth', fr: 'dent' },
   { emoji: '👅', word: 'tongue', fr: 'langue' },
+  { emoji: '👆', word: 'finger', fr: 'doigt' },
+  { emoji: '🦴', word: 'bone', fr: 'os' },
+  { emoji: '🧠', word: 'brain', fr: 'cerveau' },
 ];

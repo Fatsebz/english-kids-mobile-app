@@ -11,4 +11,5 @@ export const TABLEWARE: EmojiItem[] = [
   { emoji: '🥣', word: 'bowl', fr: 'bol' },
   { emoji: '🍾', word: 'bottle', fr: 'bouteille' },
   { emoji: '🥢', word: 'chopsticks', fr: 'baguettes' },
+  { emoji: '🫖', word: 'teapot', fr: 'théière' },
 ];

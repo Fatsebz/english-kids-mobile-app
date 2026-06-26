@@ -12,4 +12,7 @@ export const JOBS: EmojiItem[] = [
   { emoji: '👨‍🚀', word: 'astronaut', fr: 'astronaute' },
   { emoji: '👷', word: 'builder', fr: 'ouvrier' },
   { emoji: '👨‍🎨', word: 'painter', fr: 'peintre' },
+  { emoji: '👨‍🔬', word: 'scientist', fr: 'scientifique' },
+  { emoji: '👨‍🔧', word: 'mechanic', fr: 'mécanicien' },
+  { emoji: '👩‍🎤', word: 'singer', fr: 'chanteur' },
 ];

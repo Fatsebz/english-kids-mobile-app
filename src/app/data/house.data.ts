@@ -13,4 +13,8 @@ export const HOUSE: EmojiItem[] = [
   { emoji: '🛁', word: 'bath', fr: 'baignoire' },
   { emoji: '💡', word: 'lamp', fr: 'lampe' },
   { emoji: '🔑', word: 'key', fr: 'clé' },
+  { emoji: '📺', word: 'television', fr: 'télé' },
+  { emoji: '🕐', word: 'clock', fr: 'horloge' },
+  { emoji: '🪞', word: 'mirror', fr: 'miroir' },
+  { emoji: '🚿', word: 'shower', fr: 'douche' },
 ];

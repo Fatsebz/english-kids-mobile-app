@@ -13,4 +13,6 @@ export const SCHOOL: EmojiItem[] = [
   { emoji: '📓', word: 'notebook', fr: 'cahier' },
   { emoji: '🖌️', word: 'paintbrush', fr: 'pinceau' },
   { emoji: '📎', word: 'paperclip', fr: 'trombone' },
+  { emoji: '🌍', word: 'globe', fr: 'globe' },
+  { img: 'icons/glue.svg', word: 'glue', fr: 'colle' },
 ];

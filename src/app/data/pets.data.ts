@@ -11,4 +11,5 @@ export const PETS: EmojiItem[] = [
   { emoji: '🐹', word: 'hamster', fr: 'hamster' },
   { emoji: '🐀', word: 'rat', fr: 'rat' },
   { emoji: '🐭', word: 'mouse', fr: 'souris' },
+  { emoji: '🦎', word: 'lizard', fr: 'lézard' },
 ];

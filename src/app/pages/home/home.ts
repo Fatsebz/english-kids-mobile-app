@@ -5,6 +5,7 @@ import { GROUPED_THEME_IDS, GROUPS } from '../../data/groups';
 import { ProfileService } from '../../core/profile.service';
 import { SettingsService } from '../../core/settings.service';
 import { ProgressService } from '../../core/progress.service';
+import { AudioService } from '../../core/audio.service';
 import { ThemeTile } from '../../shared/theme-tile/theme-tile';
 
 @Component({
@@ -17,11 +18,15 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
 
       <div class="tiles">
         @for (g of groups(); track g.id) {
-          <a class="tile group anim-pop" [routerLink]="['/g', g.id]" [style.background]="g.gradient">
+          <a class="tile group anim-pop" [routerLink]="['/g', g.id]" [style.background]="g.gradient" (click)="say(g.title)">
             @if (groupChampion(g)) {
               <span class="badge"><span class="trophy" aria-label="Groupe terminé">🏆</span></span>
             }
-            <span class="emoji">{{ g.tileEmoji }}</span>
+            <span class="mini-grid">
+              @for (t of groupPreview(g); track t.id) {
+                <span class="mini" [style.background]="t.gradient">{{ t.tileEmoji }}</span>
+              }
+            </span>
             <span class="label">{{ g.title }}</span>
             <span class="hint">{{ g.fr }}</span>
           </a>
@@ -67,8 +72,21 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
         transform: translateY(5px);
         box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
       }
-      .tile.group .emoji {
-        font-size: 3.2rem;
+      .mini-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        width: 74px;
+        margin-bottom: 6px;
+      }
+      .mini {
+        aspect-ratio: 1;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
       }
       .tile.group .label {
         font-size: 1.5rem;
@@ -94,6 +112,11 @@ export class Home {
   private readonly profiles = inject(ProfileService);
   private readonly settings = inject(SettingsService);
   private readonly progress = inject(ProgressService);
+  private readonly audio = inject(AudioService);
+
+  say(title: string): void {
+    this.audio.speak(title);
+  }
 
   /** Un thème est visible s'il est activé et qu'au moins un mode utilisable est dispo pour le profil. */
   private visible(t: Theme): boolean {
@@ -116,6 +139,11 @@ export class Home {
 
   /** Groupes ayant au moins un thème visible. */
   readonly groups = computed(() => GROUPS.filter((g) => this.visibleThemesOf(g.themeIds).length > 0));
+
+  /** Aperçu : jusqu'à 4 vignettes de thèmes visibles du groupe. */
+  groupPreview(g: { themeIds: string[] }): Theme[] {
+    return this.visibleThemesOf(g.themeIds).slice(0, 4);
+  }
 
   /** Coupe sur le groupe si tous ses thèmes visibles sont « champion ». */
   groupChampion(g: { themeIds: string[] }): boolean {

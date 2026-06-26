@@ -12,4 +12,7 @@ export const WEATHER: EmojiItem[] = [
   { emoji: '🌫️', word: 'fog', fr: 'brouillard' },
   { emoji: '🥵', word: 'hot', fr: 'chaud' },
   { emoji: '🥶', word: 'cold', fr: 'froid' },
+  { emoji: '⚡', word: 'lightning', fr: 'éclair' },
+  { emoji: '🌪️', word: 'tornado', fr: 'tornade' },
+  { emoji: '☔', word: 'umbrella', fr: 'parapluie' },
 ];

@@ -1,0 +1,5 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="glue stick">
+  <rect x="38" y="16" width="24" height="16" rx="3" fill="#8e44ad" />
+  <rect x="35" y="32" width="30" height="54" rx="5" fill="#f0f2f5" stroke="#c2cbd3" stroke-width="2" />
+  <rect x="35" y="46" width="30" height="12" fill="#ffd23f" />
+</svg>

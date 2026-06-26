@@ -12,4 +12,6 @@ export const FOREST: EmojiItem[] = [
   { emoji: '🦝', word: 'raccoon', fr: 'raton laveur' },
   { emoji: '🦫', word: 'beaver', fr: 'castor' },
   { emoji: '🦇', word: 'bat', fr: 'chauve-souris' },
+  { emoji: '🐸', word: 'frog', fr: 'grenouille' },
+  { emoji: '🐌', word: 'snail', fr: 'escargot' },
 ];

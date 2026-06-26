@@ -14,4 +14,9 @@ export const FOOD: EmojiItem[] = [
   { emoji: '🍰', word: 'cake', fr: 'gâteau' },
   { emoji: '🍦', word: 'ice cream', fr: 'glace' },
   { emoji: '🥛', word: 'milk', fr: 'lait' },
+  { emoji: '🍲', word: 'soup', fr: 'soupe' },
+  { emoji: '🌭', word: 'hotdog', fr: 'hot-dog' },
+  { emoji: '🍿', word: 'popcorn', fr: 'popcorn' },
+  { emoji: '🍪', word: 'cookie', fr: 'biscuit' },
+  { emoji: '🍫', word: 'chocolate', fr: 'chocolat' },
 ];

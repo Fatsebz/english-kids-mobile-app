@@ -2,13 +2,14 @@ import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Theme } from '../../data/themes';
 import { ProgressService } from '../../core/progress.service';
+import { AudioService } from '../../core/audio.service';
 
 /** Tuile d'un thème : visuel + titre + étoiles (ou coupe si grand test réussi). */
 @Component({
   selector: 'app-theme-tile',
   imports: [RouterLink],
   template: `
-    <a class="tile anim-pop" [routerLink]="theme().learnPath" [style.background]="theme().gradient">
+    <a class="tile anim-pop" [routerLink]="theme().learnPath" [style.background]="theme().gradient" (click)="say()">
       <span class="badge">
         @if (progress.isChampion(theme().id)) {
           <span class="trophy" aria-label="Grand test réussi">🏆</span>
@@ -79,5 +80,10 @@ import { ProgressService } from '../../core/progress.service';
 })
 export class ThemeTile {
   protected readonly progress = inject(ProgressService);
+  private readonly audio = inject(AudioService);
   readonly theme = input.required<Theme>();
+
+  say(): void {
+    this.audio.speak(this.theme().title);
+  }
 }

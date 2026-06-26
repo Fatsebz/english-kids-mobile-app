@@ -14,4 +14,7 @@ export const BEACH: EmojiItem[] = [
   { emoji: '🐠', word: 'fish', fr: 'poisson' },
   { emoji: '☀️', word: 'sun', fr: 'soleil' },
   { emoji: '🍦', word: 'ice cream', fr: 'glace' },
+  { emoji: '🩴', word: 'flip-flops', fr: 'tongs' },
+  { emoji: '🐬', word: 'dolphin', fr: 'dauphin' },
+  { img: 'icons/starfish.svg', word: 'starfish', fr: 'étoile de mer' },
 ];

@@ -12,4 +12,8 @@ export const CLOTHES: EmojiItem[] = [
   { emoji: '🧤', word: 'gloves', fr: 'gants' },
   { emoji: '🧣', word: 'scarf', fr: 'écharpe' },
   { emoji: '🩳', word: 'shorts', fr: 'short' },
+  { emoji: '👒', word: 'hat', fr: 'chapeau' },
+  { emoji: '👢', word: 'boots', fr: 'bottes' },
+  { emoji: '👓', word: 'glasses', fr: 'lunettes' },
+  { emoji: '👔', word: 'tie', fr: 'cravate' },
 ];

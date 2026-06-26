@@ -14,4 +14,8 @@ export const FRUITS: EmojiItem[] = [
   { emoji: '🍍', word: 'pineapple', fr: 'ananas' },
   { emoji: '🥝', word: 'kiwi', fr: 'kiwi' },
   { emoji: '🍑', word: 'peach', fr: 'pêche' },
+  { emoji: '🥭', word: 'mango', fr: 'mangue' },
+  { emoji: '🥥', word: 'coconut', fr: 'noix de coco' },
+  { emoji: '🍈', word: 'melon', fr: 'melon' },
+  { emoji: '🫐', word: 'blueberries', fr: 'myrtilles' },
 ];

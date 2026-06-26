@@ -10,4 +10,7 @@ export const CHRISTMAS: EmojiItem[] = [
   { emoji: '🦌', word: 'reindeer', fr: 'renne' },
   { emoji: '⭐', word: 'star', fr: 'étoile' },
   { emoji: '🕯️', word: 'candle', fr: 'bougie' },
+  { emoji: '👼', word: 'angel', fr: 'ange' },
+  { emoji: '❄️', word: 'snowflake', fr: 'flocon' },
+  { emoji: '🛷', word: 'sleigh', fr: 'luge' },
 ];

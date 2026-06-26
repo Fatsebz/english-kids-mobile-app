@@ -14,4 +14,8 @@ export const ACTIONS: EmojiItem[] = [
   { emoji: '🏊', word: 'swim', fr: 'nager' },
   { emoji: '🤸', word: 'jump', fr: 'sauter' },
   { emoji: '⚽', word: 'play', fr: 'jouer' },
+  { emoji: '😢', word: 'cry', fr: 'pleurer' },
+  { emoji: '😂', word: 'laugh', fr: 'rire' },
+  { emoji: '🧗', word: 'climb', fr: 'grimper' },
+  { emoji: '🗣️', word: 'talk', fr: 'parler' },
 ];

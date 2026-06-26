@@ -12,4 +12,9 @@ export const SPORTS: EmojiItem[] = [
   { emoji: '⛳', word: 'golf', fr: 'golf' },
   { emoji: '⛷️', word: 'skiing', fr: 'ski' },
   { emoji: '⚾', word: 'baseball', fr: 'baseball' },
+  { emoji: '🏐', word: 'volleyball', fr: 'volley' },
+  { emoji: '🏓', word: 'table tennis', fr: 'ping-pong' },
+  { emoji: '🏒', word: 'hockey', fr: 'hockey' },
+  { emoji: '🏄', word: 'surfing', fr: 'surf' },
+  { emoji: '🎳', word: 'bowling', fr: 'bowling' },
 ];

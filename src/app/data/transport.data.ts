@@ -14,4 +14,8 @@ export const TRANSPORT: EmojiItem[] = [
   { emoji: '🏍️', word: 'motorbike', fr: 'moto' },
   { emoji: '🛴', word: 'scooter', fr: 'trottinette' },
   { emoji: '🚊', word: 'tram', fr: 'tram' },
+  { emoji: '🚕', word: 'taxi', fr: 'taxi' },
+  { emoji: '🚜', word: 'tractor', fr: 'tracteur' },
+  { emoji: '🚑', word: 'ambulance', fr: 'ambulance' },
+  { emoji: '🚒', word: 'fire truck', fr: 'camion de pompier' },
 ];

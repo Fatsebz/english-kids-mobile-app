@@ -12,4 +12,6 @@ export const INSTRUMENTS: EmojiItem[] = [
   { emoji: '🪕', word: 'banjo', fr: 'banjo' },
   { emoji: '🪈', word: 'flute', fr: 'flûte' },
   { emoji: '🪇', word: 'maracas', fr: 'maracas' },
+  { emoji: '🎤', word: 'microphone', fr: 'micro' },
+  { emoji: '🎵', word: 'musical note', fr: 'note de musique' },
 ];

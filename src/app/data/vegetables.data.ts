@@ -14,4 +14,7 @@ export const VEGETABLES: EmojiItem[] = [
   { emoji: '🍆', word: 'eggplant', fr: 'aubergine' },
   { emoji: '🧄', word: 'garlic', fr: 'ail' },
   { emoji: '🥬', word: 'lettuce', fr: 'salade' },
+  { emoji: '🎃', word: 'pumpkin', fr: 'citrouille' },
+  { emoji: '🌶️', word: 'hot pepper', fr: 'piment' },
+  { emoji: '🍠', word: 'sweet potato', fr: 'patate douce' },
 ];

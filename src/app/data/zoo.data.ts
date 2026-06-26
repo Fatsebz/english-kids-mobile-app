@@ -14,4 +14,9 @@ export const ZOO: EmojiItem[] = [
   { emoji: '🐻', word: 'bear', fr: 'ours' },
   { emoji: '🐼', word: 'panda', fr: 'panda' },
   { emoji: '🐧', word: 'penguin', fr: 'pingouin' },
+  { emoji: '🦍', word: 'gorilla', fr: 'gorille' },
+  { emoji: '🦘', word: 'kangaroo', fr: 'kangourou' },
+  { emoji: '🐫', word: 'camel', fr: 'chameau' },
+  { emoji: '🦏', word: 'rhino', fr: 'rhinocéros' },
+  { emoji: '🐨', word: 'koala', fr: 'koala' },
 ];

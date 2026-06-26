@@ -12,4 +12,7 @@ export const FAIRYTALE: EmojiItem[] = [
   { emoji: '🧚', word: 'fairy', fr: 'fée' },
   { emoji: '👑', word: 'crown', fr: 'couronne' },
   { emoji: '👻', word: 'ghost', fr: 'fantôme' },
+  { emoji: '🧜‍♀️', word: 'mermaid', fr: 'sirène' },
+  { emoji: '🪄', word: 'magic wand', fr: 'baguette magique' },
+  { emoji: '🧞', word: 'genie', fr: 'génie' },
 ];

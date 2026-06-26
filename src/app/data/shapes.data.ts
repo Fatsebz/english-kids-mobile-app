@@ -8,4 +8,6 @@ export const SHAPES: EmojiItem[] = [
   { emoji: '⭐', word: 'star', fr: 'étoile' },
   { emoji: '❤️', word: 'heart', fr: 'cœur' },
   { emoji: '🔷', word: 'diamond', fr: 'losange' },
+  { img: 'icons/rectangle.svg', word: 'rectangle', fr: 'rectangle' },
+  { img: 'icons/oval.svg', word: 'oval', fr: 'ovale' },
 ];
