@@ -22,6 +22,7 @@ import { HOUSE } from './house.data';
 import { BEACH } from './beach.data';
 import { DAYS } from './days.data';
 import { MONTHS } from './months.data';
+import { INSTRUMENTS } from './instruments.data';
 
 /** Décrit un module d'apprentissage illustré par des emojis (piloté par les données). */
 export interface LearnModule {
@@ -235,6 +236,14 @@ export const MODULES: LearnModule[] = [
     gradient: 'linear-gradient(150deg, #ff6b6b, #8e44ad)',
     items: MONTHS,
     listen: false,
+  },
+  {
+    id: 'instruments',
+    title: 'Instruments',
+    fr: 'La musique',
+    tileEmoji: '🎸',
+    gradient: 'linear-gradient(150deg, #e63946, #4dabf7)',
+    items: INSTRUMENTS,
   },
 ];
 

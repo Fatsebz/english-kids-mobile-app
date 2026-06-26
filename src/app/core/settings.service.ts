@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { ProfileService } from './profile.service';
 import { THEMES } from '../data/themes';
 
@@ -6,13 +6,16 @@ export type QuizMode = 'read' | 'listen';
 export const QUIZ_MODES: QuizMode[] = ['read', 'listen'];
 
 interface ChildSettings {
-  themes: string[];
+  /**
+   * Thèmes MASQUÉS (liste noire). Tout thème absent de cette liste est **affiché par défaut**,
+   * y compris les thèmes ajoutés plus tard — aucun besoin de les activer dans les réglages.
+   */
+  hiddenThemes: string[];
   modes: QuizMode[];
   /** Vitesse de la voix en % de la normale (50 à 100). */
   rate: number;
 }
 
-const ALL_THEMES = (): string[] => THEMES.map((t) => t.id);
 const PIN_KEY = 'ek.adminPin';
 const DEFAULT_PIN = '1234';
 const DEFAULT_RATE = 90;
@@ -21,35 +24,22 @@ const RATE_MAX = 100;
 const clampRate = (n: number): number => Math.min(RATE_MAX, Math.max(RATE_MIN, Math.round(n)));
 
 /**
- * Réglages par enfant (thèmes affichés, modes de quiz) + code PIN admin.
+ * Réglages par enfant (thèmes masqués, modes de quiz, vitesse) + code PIN admin.
  * Persistance locale `ek.settings.<childId>` et `ek.adminPin`.
  */
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
   private readonly profiles = inject(ProfileService);
 
-  /** Cache réactif des réglages par profil (rechargé/écrit à la demande). */
+  /** Cache réactif des réglages par profil. */
   private readonly cache = signal<Record<string, ChildSettings>>({});
 
-  /** Réglages du profil courant (réactif). */
-  readonly currentThemes = computed(() => {
-    const id = this.profiles.current()?.id;
-    return id ? this.get(id).themes : ALL_THEMES();
-  });
-  readonly currentModes = computed(() => {
-    const id = this.profiles.current()?.id;
-    return id ? this.get(id).modes : [...QUIZ_MODES];
-  });
-
   // ---- Lecture ----
-  themesFor(id: string): string[] {
-    return this.get(id).themes;
-  }
   modesFor(id: string): QuizMode[] {
     return this.get(id).modes;
   }
   isThemeEnabled(id: string, themeId: string): boolean {
-    return this.get(id).themes.includes(themeId);
+    return !this.get(id).hiddenThemes.includes(themeId);
   }
   isModeEnabled(id: string, mode: QuizMode): boolean {
     return this.get(id).modes.includes(mode);
@@ -59,12 +49,18 @@ export class SettingsService {
     return this.get(id).rate;
   }
 
-  // ---- Écriture (garde ≥ 1 thème et ≥ 1 mode) ----
+  // ---- Écriture ----
   setThemeEnabled(id: string, themeId: string, on: boolean): void {
     const cur = this.get(id);
-    let themes = on ? [...new Set([...cur.themes, themeId])] : cur.themes.filter((t) => t !== themeId);
-    if (themes.length === 0) themes = [themeId]; // ne jamais tout masquer
-    this.save(id, { ...cur, themes });
+    let hiddenThemes: string[];
+    if (on) {
+      hiddenThemes = cur.hiddenThemes.filter((t) => t !== themeId);
+    } else {
+      hiddenThemes = [...new Set([...cur.hiddenThemes, themeId])];
+      // Ne jamais tout masquer : garder au moins un thème visible.
+      if (hiddenThemes.length >= THEMES.length) return;
+    }
+    this.save(id, { ...cur, hiddenThemes });
   }
   setModeEnabled(id: string, mode: QuizMode, on: boolean): void {
     const cur = this.get(id);
@@ -97,7 +93,6 @@ export class SettingsService {
 
   // ---- Interne ----
   // Lecture PURE (jamais d'écriture de signal ici) : sinon NG0600 si appelée pendant le rendu.
-  // La réactivité vient de la dépendance à `cache()` ; `save()` met à jour le signal.
   private get(id: string): ChildSettings {
     return this.cache()[id] ?? this.load(id);
   }
@@ -106,9 +101,11 @@ export class SettingsService {
     try {
       const raw = localStorage.getItem(this.key(id));
       if (raw) {
-        const parsed = JSON.parse(raw) as Partial<ChildSettings>;
+        const parsed = JSON.parse(raw) as Partial<ChildSettings> & { themes?: string[] };
         return {
-          themes: parsed.themes?.length ? parsed.themes : ALL_THEMES(),
+          // Ancien format (liste blanche `themes`) → on repart de « rien masqué »
+          // pour que tous les thèmes (existants et nouveaux) soient visibles par défaut.
+          hiddenThemes: Array.isArray(parsed.hiddenThemes) ? parsed.hiddenThemes : [],
           modes: parsed.modes?.length ? parsed.modes : [...QUIZ_MODES],
           rate: parsed.rate ? clampRate(parsed.rate) : DEFAULT_RATE,
         };
@@ -116,7 +113,7 @@ export class SettingsService {
     } catch {
       /* ignore */
     }
-    return { themes: ALL_THEMES(), modes: [...QUIZ_MODES], rate: DEFAULT_RATE };
+    return { hiddenThemes: [], modes: [...QUIZ_MODES], rate: DEFAULT_RATE };
   }
 
   private save(id: string, value: ChildSettings): void {

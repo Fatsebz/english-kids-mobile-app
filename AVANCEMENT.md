@@ -45,6 +45,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Module **Transport** (12), **Fairy tale** (10), **Jobs** (10), **Zoo** (12), **Sports** (10)
 - [x] Module **Christmas** (8), **Tableware** (8), **School** (10), **House** (10), **Beach** (10)
 - [x] Modules **Days** (7) & **Months** (12) : visuel = numéro, `listen: false` (incompatibles mode écoute)
+- [x] Module **Instruments** (10 instruments de musique)
 - [x] Flag `listen` par module : pas de mode écoute si non supporté ; thème masqué si profil en écoute seule
 - [x] Accueil : tuiles générées depuis `MODULES`, grille 2 colonnes défilante
 
