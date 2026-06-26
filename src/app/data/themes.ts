@@ -12,6 +12,8 @@ export interface ThemeEntry {
   label: string;
   /** Visuel à afficher dans le prompt : chiffre, couleur (hex) ou emoji. */
   display: string;
+  /** Type de rendu de l'élément (permet de mélanger les kinds dans un thème agrégé). */
+  kind: ThemeKind;
   /** Icône SVG bundlée (prioritaire sur `display`/emoji) pour les concepts sans emoji. */
   img?: string;
   /** Couleurs claires uniquement : ajoute une bordure. */
@@ -42,7 +44,7 @@ const numbersTheme: Theme = {
   kind: 'number',
   learnPath: '/numbers',
   listen: true,
-  items: NUMBERS.map((n) => ({ key: String(n.value), label: n.word, display: String(n.value) })),
+  items: NUMBERS.map((n) => ({ key: String(n.value), label: n.word, display: String(n.value), kind: 'number' as const })),
 };
 
 const colorsTheme: Theme = {
@@ -54,7 +56,7 @@ const colorsTheme: Theme = {
   kind: 'color',
   learnPath: '/colors',
   listen: true,
-  items: COLORS.map((c) => ({ key: c.name, label: c.name, display: c.hex, light: c.light })),
+  items: COLORS.map((c) => ({ key: c.name, label: c.name, display: c.hex, light: c.light, kind: 'color' as const })),
 };
 
 const emojiThemes: Theme[] = MODULES.map((m) => ({
@@ -68,8 +70,8 @@ const emojiThemes: Theme[] = MODULES.map((m) => ({
   listen: m.listen ?? true,
   items: m.items.map((it) =>
     m.kind === 'word'
-      ? { key: it.word, label: it.word, display: it.fr } // visuel = mot français
-      : { key: it.word, label: it.word, display: it.emoji ?? '', img: it.img },
+      ? { key: it.word, label: it.word, display: it.fr, kind: 'word' as const } // visuel = mot français
+      : { key: it.word, label: it.word, display: it.emoji ?? '', img: it.img, kind: 'emoji' as const },
   ),
 }));
 

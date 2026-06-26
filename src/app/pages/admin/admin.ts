@@ -5,6 +5,7 @@ import { ProgressService } from '../../core/progress.service';
 import { SettingsService, QuizMode } from '../../core/settings.service';
 import { AudioService } from '../../core/audio.service';
 import { THEMES } from '../../data/themes';
+import { APP_VERSION, CHANGELOG } from '../../data/changelog';
 
 @Component({
   selector: 'app-admin',
@@ -26,6 +27,7 @@ import { THEMES } from '../../data/themes';
             }
           </div>
           @if (error()) { <p class="err">Code incorrect</p> }
+          <p class="version">version {{ appVersion }}</p>
           <div class="pad">
             @for (d of pad; track d) {
               <button class="key" (click)="press(d)">{{ d }}</button>
@@ -42,92 +44,135 @@ import { THEMES } from '../../data/themes';
           }
         </div>
 
-        <section class="card block">
-          <h2>Thèmes affichés</h2>
-          <div class="rows">
-            @for (t of themes; track t.id) {
-              <label class="row">
-                <span>{{ t.tileEmoji }} {{ t.title }}</span>
-                <input
-                  type="checkbox"
-                  [checked]="settings.isThemeEnabled(child(), t.id)"
-                  (change)="toggleTheme(t.id, $event)"
-                />
-              </label>
-            }
-          </div>
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('themes')">
+            <span>Thèmes affichés</span><span class="acc-icon">{{ open() === 'themes' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'themes') {
+            <div class="rows">
+              @for (t of themes; track t.id) {
+                <label class="row">
+                  <span>{{ t.tileEmoji }} {{ t.title }}</span>
+                  <input
+                    type="checkbox"
+                    [checked]="settings.isThemeEnabled(child(), t.id)"
+                    (change)="toggleTheme(t.id, $event)"
+                  />
+                </label>
+              }
+            </div>
+          }
         </section>
 
-        <section class="card block">
-          <h2>Modes de quiz</h2>
-          <label class="row">
-            <span>📖 Lis le mot</span>
-            <input type="checkbox" [checked]="settings.isModeEnabled(child(), 'read')" (change)="toggleMode('read', $event)" />
-          </label>
-          <label class="row">
-            <span>👂 Écoute et trouve</span>
-            <input type="checkbox" [checked]="settings.isModeEnabled(child(), 'listen')" (change)="toggleMode('listen', $event)" />
-          </label>
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('modes')">
+            <span>Modes de quiz</span><span class="acc-icon">{{ open() === 'modes' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'modes') {
+            <label class="row">
+              <span>📖 Lis le mot</span>
+              <input type="checkbox" [checked]="settings.isModeEnabled(child(), 'read')" (change)="toggleMode('read', $event)" />
+            </label>
+            <label class="row">
+              <span>👂 Écoute et trouve</span>
+              <input type="checkbox" [checked]="settings.isModeEnabled(child(), 'listen')" (change)="toggleMode('listen', $event)" />
+            </label>
+          }
         </section>
 
-        <section class="card block">
-          <h2>Vitesse de la voix</h2>
-          <div class="rate-row">
-            <input
-              type="range"
-              min="50"
-              max="100"
-              step="10"
-              [value]="settings.rateFor(child())"
-              (input)="setRate($event)"
-            />
-            <span class="rate-val">{{ settings.rateFor(child()) }}%</span>
-          </div>
-          <button class="btn" (click)="testVoice()">🔊 Tester la voix</button>
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('rate')">
+            <span>Vitesse de la voix</span><span class="acc-icon">{{ open() === 'rate' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'rate') {
+            <div class="rate-row">
+              <input
+                type="range"
+                min="50"
+                max="100"
+                step="10"
+                [value]="settings.rateFor(child())"
+                (input)="setRate($event)"
+              />
+              <span class="rate-val">{{ settings.rateFor(child()) }}%</span>
+            </div>
+            <button class="btn" (click)="testVoice()">🔊 Tester la voix</button>
+          }
         </section>
 
-        <section class="card block">
-          <h2>Réinitialiser l'avancement</h2>
-          <button class="btn danger" (click)="resetAll()">Tout réinitialiser pour {{ childName() }}</button>
-          <div class="rows">
-            @for (t of themes; track t.id) {
-              <div class="row">
-                <span>{{ t.tileEmoji }} {{ t.title }}</span>
-                <button class="mini" (click)="resetTheme(t.id)">Réinitialiser</button>
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('reset')">
+            <span>Réinitialiser l'avancement</span><span class="acc-icon">{{ open() === 'reset' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'reset') {
+            <button class="btn danger" (click)="resetAll()">Tout réinitialiser pour {{ childName() }}</button>
+            <div class="rows">
+              @for (t of themes; track t.id) {
+                <div class="row">
+                  <span>{{ t.tileEmoji }} {{ t.title }}</span>
+                  <button class="mini" (click)="resetTheme(t.id)">Réinitialiser</button>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('pin')">
+            <span>Code parent</span><span class="acc-icon">{{ open() === 'pin' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'pin') {
+            <div class="pin-change">
+              <input #np type="tel" inputmode="numeric" maxlength="4" placeholder="Nouveau code" />
+              <button class="icon-btn" (click)="changePin(np)" aria-label="Changer le code" title="Changer le code">✓</button>
+            </div>
+            @if (pinError()) { <p class="err">Le code doit comporter exactement 4 chiffres.</p> }
+            @if (pinSaved()) { <p class="ok">Code mis à jour ✅</p> }
+          }
+        </section>
+
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('backup')">
+            <span>Sauvegarde</span><span class="acc-icon">{{ open() === 'backup' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'backup') {
+            <p class="hint-txt">
+              Exporte la progression et les réglages de <b>tous les profils</b> (à garder en lieu sûr ou
+              transférer sur un autre appareil). La progression est sinon perdue en cas de désinstallation.
+            </p>
+            <div class="save-actions">
+              <button class="btn" (click)="exportData()">⬇️ Exporter</button>
+              <button class="btn btn--ghost" (click)="importData()">⬆️ Restaurer</button>
+            </div>
+            <textarea
+              #ta
+              class="backup"
+              [value]="backupText()"
+              (input)="backupText.set(ta.value)"
+              placeholder="Le code de sauvegarde apparaît ici après « Exporter ». Pour restaurer, colle un code ici puis « Restaurer » (l'application se rechargera)."
+            ></textarea>
+            @if (backupMsg()) { <p class="ok">{{ backupMsg() }}</p> }
+            @if (backupError()) { <p class="err">{{ backupError() }}</p> }
+          }
+        </section>
+
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('about')">
+            <span>À propos</span><span class="acc-icon">{{ open() === 'about' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'about') {
+            <p class="ver">Version {{ appVersion }}</p>
+            @for (e of changelog; track e.version) {
+              <div class="cl-entry">
+                <div class="cl-head">{{ e.version }} <span class="cl-date">· {{ e.date }}</span></div>
+                <ul class="cl-list">
+                  @for (c of e.changes; track c) {
+                    <li>{{ c }}</li>
+                  }
+                </ul>
               </div>
             }
-          </div>
-        </section>
-
-        <section class="card block">
-          <h2>Code parent</h2>
-          <div class="pin-change">
-            <input #np type="tel" inputmode="numeric" maxlength="4" placeholder="Nouveau code" />
-            <button class="icon-btn" (click)="changePin(np)" aria-label="Changer le code" title="Changer le code">✓</button>
-          </div>
-          @if (pinError()) { <p class="err">Le code doit comporter exactement 4 chiffres.</p> }
-          @if (pinSaved()) { <p class="ok">Code mis à jour ✅</p> }
-        </section>
-
-        <section class="card block">
-          <h2>Sauvegarde</h2>
-          <p class="hint-txt">
-            Exporte la progression et les réglages de <b>tous les profils</b> (à garder en lieu sûr ou
-            transférer sur un autre appareil). La progression est sinon perdue en cas de désinstallation.
-          </p>
-          <div class="save-actions">
-            <button class="btn" (click)="exportData()">⬇️ Exporter</button>
-            <button class="btn btn--ghost" (click)="importData()">⬆️ Restaurer</button>
-          </div>
-          <textarea
-            #ta
-            class="backup"
-            [value]="backupText()"
-            (input)="backupText.set(ta.value)"
-            placeholder="Le code de sauvegarde apparaît ici après « Exporter ». Pour restaurer, colle un code ici puis « Restaurer » (l'application se rechargera)."
-          ></textarea>
-          @if (backupMsg()) { <p class="ok">{{ backupMsg() }}</p> }
-          @if (backupError()) { <p class="err">{{ backupError() }}</p> }
+          }
         </section>
       }
     </main>
@@ -142,6 +187,41 @@ import { THEMES } from '../../data/themes';
       .block {
         padding: 16px;
         color: var(--c-text);
+      }
+      .acc {
+        padding: 0;
+      }
+      .acc-head {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: none;
+        border: none;
+        padding: 9px 16px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 1.15rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--c-text);
+        text-align: left;
+      }
+      .acc-icon {
+        flex: 0 0 auto;
+        font-size: 1.4rem;
+        line-height: 1;
+        width: 22px;
+        text-align: center;
+        color: var(--c-blue);
+      }
+      .acc > *:not(.acc-head) {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+      .acc > *:not(.acc-head):last-child {
+        margin-bottom: 16px;
       }
       .tabs {
         display: flex;
@@ -195,7 +275,7 @@ import { THEMES } from '../../data/themes';
       .danger {
         background: #c92a2a;
         box-shadow: 0 6px 0 #9c2020;
-        width: 100%;
+        display: block;
         margin-bottom: 10px;
       }
       .danger:active {
@@ -238,6 +318,40 @@ import { THEMES } from '../../data/themes';
       .ok {
         color: var(--c-green);
         margin: 8px 0 0;
+      }
+      .version {
+        margin: 0;
+        font-size: 0.85rem;
+        opacity: 0.6;
+      }
+      .ver {
+        font-weight: 700;
+        margin: 0 0 10px;
+      }
+      .cl-entry {
+        border-top: 1px solid #eee;
+        padding-top: 8px;
+        margin-top: 8px;
+      }
+      .cl-entry:first-of-type {
+        border-top: none;
+        margin-top: 0;
+      }
+      .cl-head {
+        font-weight: 700;
+      }
+      .cl-date {
+        font-weight: 400;
+        opacity: 0.6;
+        font-size: 0.9rem;
+      }
+      .cl-list {
+        margin: 6px 0 0;
+        padding-left: 18px;
+        font-size: 0.95rem;
+      }
+      .cl-list li {
+        margin: 3px 0;
       }
       .rate-row {
         display: flex;
@@ -341,9 +455,13 @@ export class Admin {
 
   readonly children = this.profiles.profiles;
   readonly themes = THEMES;
+  readonly appVersion = APP_VERSION;
+  readonly changelog = CHANGELOG;
   readonly pad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 
   readonly unlocked = signal(false);
+  /** Section d'accordéon ouverte (une seule à la fois ; '' = toutes repliées). */
+  readonly open = signal('');
   readonly entry = signal('');
   readonly error = signal(false);
   readonly child = signal(this.children[0].id);
@@ -355,6 +473,10 @@ export class Admin {
 
   childName(): string {
     return this.children.find((c) => c.id === this.child())?.name ?? '';
+  }
+
+  toggle(id: string): void {
+    this.open.update((cur) => (cur === id ? '' : id));
   }
 
   press(d: string): void {

@@ -2,10 +2,12 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Theme, THEMES } from '../../data/themes';
 import { GROUPED_THEME_IDS, GROUPS } from '../../data/groups';
+import { ALL_ID, CHAMPIONS_ID } from '../../data/aggregate';
 import { ProfileService } from '../../core/profile.service';
 import { SettingsService } from '../../core/settings.service';
 import { ProgressService } from '../../core/progress.service';
 import { AudioService } from '../../core/audio.service';
+import { AggregateService } from '../../core/aggregate.service';
 import { ThemeTile } from '../../shared/theme-tile/theme-tile';
 
 @Component({
@@ -17,6 +19,13 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
       <p class="subtitle">Apprends l'anglais en jouant&nbsp;!</p>
 
       <div class="tiles">
+        @for (r of reviewTiles(); track r.id) {
+          <a class="tile group review anim-pop" [routerLink]="['/review', r.id]" [style.background]="r.gradient" (click)="say(r.title)">
+            <span class="emoji">{{ r.tileEmoji }}</span>
+            <span class="label">{{ r.title }}</span>
+            <span class="hint">{{ r.fr }}</span>
+          </a>
+        }
         @for (g of groups(); track g.id) {
           <a class="tile group anim-pop" [routerLink]="['/g', g.id]" [style.background]="g.gradient" (click)="say(g.title)">
             @if (groupChampion(g)) {
@@ -88,6 +97,9 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
         font-size: 1.35rem;
         box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
       }
+      .tile.review .emoji {
+        font-size: 3.2rem;
+      }
       .tile.group .label {
         font-size: 1.5rem;
         font-weight: 700;
@@ -113,6 +125,15 @@ export class Home {
   private readonly settings = inject(SettingsService);
   private readonly progress = inject(ProgressService);
   private readonly audio = inject(AudioService);
+  private readonly agg = inject(AggregateService);
+
+  /** Tuiles de révision dynamiques (Tout / Champions) quand pertinentes. */
+  readonly reviewTiles = computed(() =>
+    [ALL_ID, CHAMPIONS_ID]
+      .filter((id) => this.agg.visible(id))
+      .map((id) => this.agg.meta(id))
+      .filter((t): t is Theme => !!t),
+  );
 
   say(title: string): void {
     this.audio.speak(title);

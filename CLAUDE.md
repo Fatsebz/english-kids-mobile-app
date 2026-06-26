@@ -199,6 +199,16 @@ npx @capacitor/assets generate --android --assetPath resources \
 > (inutiles) pour alléger l'APK. Sur **Android 12+**, l'écran de démarrage système affiche l'icône
 > centrée sur le fond ; le splash plein-écran s'affiche via `@drawable/splash`.
 
+## Versionnage & changelog
+- **Source unique** : `src/app/data/changelog.ts` (`APP_VERSION` + `CHANGELOG`). Affiché dans l'écran
+  **⚙️ Réglages** (section « À propos » + version sur l'écran de code).
+- **Publier une version** :
+  1. Ajouter une entrée **en tête** de `CHANGELOG` (`{ version, date, changes[] }`) et mettre à jour `APP_VERSION`.
+  2. Aligner `android/app/build.gradle` : `versionName` = `APP_VERSION`, **incrémenter** `versionCode` (entier).
+  3. Aligner `package.json` (`version`).
+  4. `npx ng build ; npx cap sync android`, puis APK.
+- Versionnage **sémantique** (MAJ.MIN.CORR). `versionCode` doit toujours augmenter pour une mise à jour Android.
+
 ## Notes techniques
 - Angular 22 : composants **standalone**, **signals**, control flow `@if`/`@for`. Fichiers nommés
   `app.ts`, `home.ts`, etc. (nouvelle convention, sans suffixe `.component`).

@@ -39,6 +39,11 @@ export const routes: Routes = [
       import('./pages/emoji-learn/emoji-learn').then((m) => m.EmojiLearn),
   },
   {
+    path: 'review/:id',
+    canActivate: [profileGuard],
+    loadComponent: () => import('./pages/review/review').then((m) => m.Review),
+  },
+  {
     path: 'quiz/:id/:mode',
     canActivate: [profileGuard],
     loadComponent: () => import('./pages/quiz/quiz').then((m) => m.Quiz),

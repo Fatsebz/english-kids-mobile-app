@@ -3,6 +3,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AudioService } from '../../core/audio.service';
 import { ProgressService } from '../../core/progress.service';
 import { findTheme, ThemeEntry } from '../../data/themes';
+import { isAggregateId } from '../../data/aggregate';
+import { AggregateService } from '../../core/aggregate.service';
 import { choicesFor, pickTarget } from '../../shared/quiz-engine';
 import { Celebration, CelebrateOptions } from '../../shared/celebration/celebration';
 
@@ -34,7 +36,7 @@ type Mode = 'read' | 'listen';
           <div class="choices images">
             @for (c of choices(); track c.key) {
               <button class="img-choice" [class.anim-shake]="wrong() === c.key" (click)="answer(c)">
-                @switch (kind) {
+                @switch (c.kind) {
                   @case ('number') { <span class="digit">{{ c.display }}</span> }
                   @case ('color') {
                     <span class="swatch" [class.bordered]="c.light" [style.background]="c.display"></span>
@@ -49,7 +51,7 @@ type Mode = 'read' | 'listen';
           </div>
         } @else {
           <div class="prompt card">
-            @switch (kind) {
+            @switch (t.kind) {
               @case ('number') { <div class="digit anim-pop">{{ t.display }}</div> }
               @case ('color') {
                 <div class="swatch big anim-pop" [class.bordered]="t.light" [style.background]="t.display"></div>
@@ -188,16 +190,18 @@ type Mode = 'read' | 'listen';
 export class Quiz {
   private readonly audio = inject(AudioService);
   private readonly progress = inject(ProgressService);
+  private readonly agg = inject(AggregateService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly celeb = viewChild(Celebration);
 
   readonly id = this.route.snapshot.paramMap.get('id') ?? '';
   readonly mode: Mode = this.route.snapshot.paramMap.get('mode') === 'listen' ? 'listen' : 'read';
-  private readonly theme = findTheme(this.id);
+  /** Thème dynamique de révision (`all`/`champions`) : pas de progression ni grand test. */
+  private readonly isAgg = isAggregateId(this.id);
+  private readonly theme = this.isAgg ? this.agg.theme(this.id, this.mode) : findTheme(this.id);
 
   readonly title = this.theme?.title ?? '';
-  readonly kind = this.theme?.kind ?? 'emoji';
   readonly learnPath = this.theme?.learnPath ?? '/';
   private readonly total = this.theme?.items.length ?? 0;
 
@@ -231,14 +235,19 @@ export class Quiz {
     if (c.key === t.key) {
       this.locked = true;
       this.audio.speak(c.label);
-      const before = this.progress.stars(this.id, this.total);
-      this.progress.recordCorrect(this.id, c.key);
-      const after = this.progress.stars(this.id, this.total);
       this.score.update((s) => s + 1);
-      // Atteindre la 3e étoile débloque le grand test → on ira le proposer.
-      this.gotoLearn = before < 3 && after >= 3;
-      // Si une bonne réponse fait franchir un palier d'étoile → célébration spéciale.
-      this.celeb()?.play(after > before ? this.starCelebration(after) : undefined);
+      if (this.isAgg) {
+        // Thème de révision : pas d'étoiles ni de progression.
+        this.celeb()?.play();
+      } else {
+        const before = this.progress.stars(this.id, this.total);
+        this.progress.recordCorrect(this.id, c.key);
+        const after = this.progress.stars(this.id, this.total);
+        // Atteindre la 3e étoile débloque le grand test → on ira le proposer.
+        this.gotoLearn = before < 3 && after >= 3;
+        // Si une bonne réponse fait franchir un palier d'étoile → célébration spéciale.
+        this.celeb()?.play(after > before ? this.starCelebration(after) : undefined);
+      }
     } else {
       this.wrong.set(c.key);
       setTimeout(() => this.wrong.set(null), 450);

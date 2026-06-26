@@ -78,7 +78,9 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] **Icônes SVG bundlées** (`img` sur un item) pour les concepts sans emoji clair : `fork`, `eraser`, `table`, `witch` (sorcière entière), `plate` (assiette seule), `sea`, `sand`, `goldfish`, `parakeet`
 - [x] Module **Pets** (animaux domestiques) + **Farm** renommé ; **Forest** (forêt) ; **Insects** (insectes) ; **Seasons** (saisons)
 - [x] Module **Time** (unités de temps, kind `word` : visuel = mot FR, lecture seule)
-- [x] **Groupes de thèmes** (`groups.ts`) : Animaux / Concepts / Temps → sous-écran `/g/:id` ; tuile réutilisable `theme-tile`
+- [x] **Groupes de thèmes** (`groups.ts`) : Animaux / Concepts / Temps / Nourriture → sous-écran `/g/:id` ; tuile réutilisable `theme-tile`
+- [x] **Thèmes de révision dynamiques** : ❓ Tout (tous les éléments activés) et 🏆 Champions (thèmes avec coupe) — quiz mixte sans étoiles ni grand test (`aggregate.ts`, `AggregateService`, `/review/:id`)
+- [x] Rendu **par kind d'élément** (chiffres/couleurs/emojis/mots mélangeables dans un même quiz)
 
 ## Android / Build
 - [x] `ng build` OK (sortie `dist/english-kids/browser`)
