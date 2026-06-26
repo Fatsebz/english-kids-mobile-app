@@ -237,7 +237,7 @@ export class GrandTest {
         this.locked = true;
         this.won = true;
         this.progress.setChampion(this.id);
-        this.celeb()?.play();
+        this.celeb()?.play({ icon: '🏆', message: 'Champion !', sound: true });
       } else {
         this.goTo(next);
       }
