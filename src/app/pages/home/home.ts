@@ -15,7 +15,7 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
   imports: [RouterLink, ThemeTile],
   template: `
     <main class="screen home">
-      <h1 class="title big">English Kids</h1>
+      <img class="logo" src="englishkidz.png" alt="English Kids" />
       <p class="subtitle">Apprends l'anglais en jouant&nbsp;!</p>
 
       <div class="tiles">
@@ -51,12 +51,16 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
       .home {
         overflow-y: auto;
       }
-      .big {
-        font-size: clamp(2.2rem, 11vw, 3.4rem);
-        text-align: center;
+      .logo {
+        display: block;
+        width: clamp(180px, 60vw, 280px);
+        height: auto;
+        margin: 0 auto;
+        filter: drop-shadow(0 4px 10px var(--c-shadow));
       }
       .subtitle {
         text-align: center;
+        margin-top: -24px;
       }
       .tiles {
         display: grid;

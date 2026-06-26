@@ -1,14 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Profile, ProfileService } from '../../core/profile.service';
-import { UkFlag } from '../../shared/uk-flag/uk-flag';
 
 @Component({
   selector: 'app-profiles',
-  imports: [UkFlag],
+  imports: [],
   template: `
     <main class="picker">
-      <app-uk-flag class="flag" />
+      <img class="logo" src="englishkidz.png" alt="English Kids" />
       <h1 class="title big">Qui joue&nbsp;?</h1>
 
       <div class="avatars">
@@ -37,11 +36,10 @@ import { UkFlag } from '../../shared/uk-flag/uk-flag';
         min-height: 100dvh;
         padding: 24px calc(24px + env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));
       }
-      .flag {
-        width: clamp(90px, 30vw, 130px);
-        aspect-ratio: 2 / 1;
-        box-shadow: 0 6px 16px var(--c-shadow);
-        border-radius: 6px;
+      .logo {
+        width: clamp(150px, 50vw, 240px);
+        height: auto;
+        filter: drop-shadow(0 6px 16px var(--c-shadow));
       }
       .big {
         font-size: clamp(2rem, 9vw, 3rem);
