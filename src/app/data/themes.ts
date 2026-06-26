@@ -27,6 +27,8 @@ export interface Theme {
   /** Route de l'écran « Apprendre ». */
   learnPath: string;
   items: ThemeEntry[];
+  /** Compatible avec le mode « écoute → choisir l'image » (visuel distinct par élément). */
+  listen: boolean;
 }
 
 const numbersTheme: Theme = {
@@ -37,6 +39,7 @@ const numbersTheme: Theme = {
   gradient: 'linear-gradient(150deg, #ff6b6b, #ff8e53)',
   kind: 'number',
   learnPath: '/numbers',
+  listen: true,
   items: NUMBERS.map((n) => ({ key: String(n.value), label: n.word, display: String(n.value) })),
 };
 
@@ -48,6 +51,7 @@ const colorsTheme: Theme = {
   gradient: 'linear-gradient(150deg, #4dabf7, #2ec27e)',
   kind: 'color',
   learnPath: '/colors',
+  listen: true,
   items: COLORS.map((c) => ({ key: c.name, label: c.name, display: c.hex, light: c.light })),
 };
 
@@ -59,6 +63,7 @@ const emojiThemes: Theme[] = MODULES.map((m) => ({
   gradient: m.gradient,
   kind: 'emoji' as const,
   learnPath: `/m/${m.id}`,
+  listen: m.listen ?? true,
   items: m.items.map((it) => ({ key: it.word, label: it.word, display: it.emoji })),
 }));
 

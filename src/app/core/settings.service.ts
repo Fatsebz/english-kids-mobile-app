@@ -8,11 +8,17 @@ export const QUIZ_MODES: QuizMode[] = ['read', 'listen'];
 interface ChildSettings {
   themes: string[];
   modes: QuizMode[];
+  /** Vitesse de la voix en % de la normale (50 à 100). */
+  rate: number;
 }
 
 const ALL_THEMES = (): string[] => THEMES.map((t) => t.id);
 const PIN_KEY = 'ek.adminPin';
 const DEFAULT_PIN = '1234';
+const DEFAULT_RATE = 90;
+const RATE_MIN = 50;
+const RATE_MAX = 100;
+const clampRate = (n: number): number => Math.min(RATE_MAX, Math.max(RATE_MIN, Math.round(n)));
 
 /**
  * Réglages par enfant (thèmes affichés, modes de quiz) + code PIN admin.
@@ -48,6 +54,10 @@ export class SettingsService {
   isModeEnabled(id: string, mode: QuizMode): boolean {
     return this.get(id).modes.includes(mode);
   }
+  /** Vitesse de la voix (%) du profil. */
+  rateFor(id: string): number {
+    return this.get(id).rate;
+  }
 
   // ---- Écriture (garde ≥ 1 thème et ≥ 1 mode) ----
   setThemeEnabled(id: string, themeId: string, on: boolean): void {
@@ -61,6 +71,9 @@ export class SettingsService {
     let modes = on ? [...new Set([...cur.modes, mode])] : cur.modes.filter((m) => m !== mode);
     if (modes.length === 0) modes = [mode];
     this.save(id, { ...cur, modes });
+  }
+  setRate(id: string, percent: number): void {
+    this.save(id, { ...this.get(id), rate: clampRate(percent) });
   }
 
   // ---- PIN ----
@@ -97,12 +110,13 @@ export class SettingsService {
         return {
           themes: parsed.themes?.length ? parsed.themes : ALL_THEMES(),
           modes: parsed.modes?.length ? parsed.modes : [...QUIZ_MODES],
+          rate: parsed.rate ? clampRate(parsed.rate) : DEFAULT_RATE,
         };
       }
     } catch {
       /* ignore */
     }
-    return { themes: ALL_THEMES(), modes: [...QUIZ_MODES] };
+    return { themes: ALL_THEMES(), modes: [...QUIZ_MODES], rate: DEFAULT_RATE };
   }
 
   private save(id: string, value: ChildSettings): void {

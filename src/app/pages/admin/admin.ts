@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { ProfileService } from '../../core/profile.service';
 import { ProgressService } from '../../core/progress.service';
 import { SettingsService, QuizMode } from '../../core/settings.service';
+import { AudioService } from '../../core/audio.service';
 import { THEMES } from '../../data/themes';
 
 @Component({
@@ -67,6 +68,22 @@ import { THEMES } from '../../data/themes';
             <span>👂 Écoute et trouve</span>
             <input type="checkbox" [checked]="settings.isModeEnabled(child(), 'listen')" (change)="toggleMode('listen', $event)" />
           </label>
+        </section>
+
+        <section class="card block">
+          <h2>Vitesse de la voix</h2>
+          <div class="rate-row">
+            <input
+              type="range"
+              min="50"
+              max="100"
+              step="10"
+              [value]="settings.rateFor(child())"
+              (input)="setRate($event)"
+            />
+            <span class="rate-val">{{ settings.rateFor(child()) }}%</span>
+          </div>
+          <button class="btn" (click)="testVoice()">🔊 Tester la voix</button>
         </section>
 
         <section class="card block">
@@ -201,6 +218,22 @@ import { THEMES } from '../../data/themes';
         color: var(--c-green);
         margin: 8px 0 0;
       }
+      .rate-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 12px;
+      }
+      .rate-row input[type='range'] {
+        flex: 1;
+        height: 32px;
+      }
+      .rate-val {
+        font-weight: 700;
+        font-size: 1.1rem;
+        min-width: 52px;
+        text-align: right;
+      }
       /* Pavé PIN */
       .pin-card {
         padding: 22px;
@@ -260,6 +293,7 @@ export class Admin {
   protected readonly settings = inject(SettingsService);
   private readonly progress = inject(ProgressService);
   private readonly profiles = inject(ProfileService);
+  private readonly audio = inject(AudioService);
 
   readonly children = this.profiles.profiles;
   readonly themes = THEMES;
@@ -301,6 +335,14 @@ export class Admin {
 
   toggleMode(mode: QuizMode, ev: Event): void {
     this.settings.setModeEnabled(this.child(), mode, (ev.target as HTMLInputElement).checked);
+  }
+
+  setRate(ev: Event): void {
+    this.settings.setRate(this.child(), Number((ev.target as HTMLInputElement).value));
+  }
+
+  testVoice(): void {
+    this.audio.speak('Hello! Cat, dog, sun.', this.settings.rateFor(this.child()) / 100);
   }
 
   resetAll(): void {

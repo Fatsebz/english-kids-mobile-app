@@ -10,6 +10,18 @@ import { FAMILY } from './family.data';
 import { CLOTHES } from './clothes.data';
 import { SHAPES } from './shapes.data';
 import { LETTERS } from './letters.data';
+import { TRANSPORT } from './transport.data';
+import { FAIRYTALE } from './fairytale.data';
+import { JOBS } from './jobs.data';
+import { ZOO } from './zoo.data';
+import { SPORTS } from './sports.data';
+import { CHRISTMAS } from './christmas.data';
+import { TABLEWARE } from './tableware.data';
+import { SCHOOL } from './school.data';
+import { HOUSE } from './house.data';
+import { BEACH } from './beach.data';
+import { DAYS } from './days.data';
+import { MONTHS } from './months.data';
 
 /** Décrit un module d'apprentissage illustré par des emojis (piloté par les données). */
 export interface LearnModule {
@@ -25,6 +37,12 @@ export interface LearnModule {
   gradient: string;
   /** Les éléments enseignés. */
   items: EmojiItem[];
+  /**
+   * Compatible avec le mode « écoute → choisir l'image ». `false` quand les éléments
+   * n'ont pas de visuel distinct (ex. jours/mois, dont le visuel n'est qu'un numéro).
+   * Par défaut `true`.
+   */
+  listen?: boolean;
 }
 
 /**
@@ -119,6 +137,104 @@ export const MODULES: LearnModule[] = [
     tileEmoji: '🔤',
     gradient: 'linear-gradient(150deg, #2ec27e, #4dabf7)',
     items: LETTERS,
+  },
+  {
+    id: 'transport',
+    title: 'Transport',
+    fr: 'Les transports',
+    tileEmoji: '🚗',
+    gradient: 'linear-gradient(150deg, #ff6b6b, #4dabf7)',
+    items: TRANSPORT,
+  },
+  {
+    id: 'fairytale',
+    title: 'Fairy tale',
+    fr: 'Les contes',
+    tileEmoji: '🦄',
+    gradient: 'linear-gradient(150deg, #ff6fae, #ffd23f)',
+    items: FAIRYTALE,
+  },
+  {
+    id: 'jobs',
+    title: 'Jobs',
+    fr: 'Les métiers',
+    tileEmoji: '👷',
+    gradient: 'linear-gradient(150deg, #4dabf7, #ff8e53)',
+    items: JOBS,
+  },
+  {
+    id: 'zoo',
+    title: 'Zoo',
+    fr: 'Le zoo',
+    tileEmoji: '🦁',
+    gradient: 'linear-gradient(150deg, #ffd23f, #2ec27e)',
+    items: ZOO,
+  },
+  {
+    id: 'sports',
+    title: 'Sports',
+    fr: 'Le sport',
+    tileEmoji: '⚽',
+    gradient: 'linear-gradient(150deg, #2ec27e, #4dabf7)',
+    items: SPORTS,
+  },
+  {
+    id: 'christmas',
+    title: 'Christmas',
+    fr: 'Noël',
+    tileEmoji: '🎄',
+    gradient: 'linear-gradient(150deg, #e63946, #2ec27e)',
+    items: CHRISTMAS,
+  },
+  {
+    id: 'tableware',
+    title: 'Tableware',
+    fr: 'À table',
+    tileEmoji: '🍽️',
+    gradient: 'linear-gradient(150deg, #8e44ad, #ff6fae)',
+    items: TABLEWARE,
+  },
+  {
+    id: 'school',
+    title: 'School',
+    fr: 'L\'école',
+    tileEmoji: '✏️',
+    gradient: 'linear-gradient(150deg, #ff8c1a, #4dabf7)',
+    items: SCHOOL,
+  },
+  {
+    id: 'house',
+    title: 'House',
+    fr: 'La maison',
+    tileEmoji: '🏠',
+    gradient: 'linear-gradient(150deg, #4dabf7, #ff6fae)',
+    items: HOUSE,
+  },
+  {
+    id: 'beach',
+    title: 'Beach',
+    fr: 'La plage',
+    tileEmoji: '🏖️',
+    gradient: 'linear-gradient(150deg, #ffd23f, #4dabf7)',
+    items: BEACH,
+  },
+  {
+    id: 'days',
+    title: 'Days',
+    fr: 'Les jours',
+    tileEmoji: '📅',
+    gradient: 'linear-gradient(150deg, #8e44ad, #4dabf7)',
+    items: DAYS,
+    listen: false,
+  },
+  {
+    id: 'months',
+    title: 'Months',
+    fr: 'Les mois',
+    tileEmoji: '🗓️',
+    gradient: 'linear-gradient(150deg, #ff6b6b, #8e44ad)',
+    items: MONTHS,
+    listen: false,
   },
 ];
 

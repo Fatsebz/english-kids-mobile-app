@@ -42,6 +42,10 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Module **Clothes** (vêtements, 10 éléments)
 - [x] Module **Shapes** (formes, 6 éléments)
 - [x] Module **Letters** (alphabet A–Z ; visuel = majuscule, indice = minuscule)
+- [x] Module **Transport** (12), **Fairy tale** (10), **Jobs** (10), **Zoo** (12), **Sports** (10)
+- [x] Module **Christmas** (8), **Tableware** (8), **School** (10), **House** (10), **Beach** (10)
+- [x] Modules **Days** (7) & **Months** (12) : visuel = numéro, `listen: false` (incompatibles mode écoute)
+- [x] Flag `listen` par module : pas de mode écoute si non supporté ; thème masqué si profil en écoute seule
 - [x] Accueil : tuiles générées depuis `MODULES`, grille 2 colonnes défilante
 
 ## Profils & progression
@@ -62,6 +66,7 @@ Suivi des tâches du projet. ☑ = fait · ☐ = à faire
 - [x] Mode **`listen`** : 🔊 prononce → choisir l'image (non-lecteurs)
 - [x] Progression **partagée** entre les deux modes
 - [x] **Admin** (3e carte ⚙️, PIN défaut `1234`) : thèmes affichés + modes par enfant, réinitialisation (profil / thème)
+- [x] **Vitesse de la voix par profil** (slider 50–100 %, défaut 90 %) + bouton de test dans l'Admin
 - [x] Accueil et page *Apprendre* filtrés selon les réglages du profil
 
 ## Android / Build

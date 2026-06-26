@@ -211,8 +211,12 @@ export class GrandTest {
   private won = false;
 
   constructor() {
-    // Accès réservé : thème valide et 3 étoiles obtenues.
-    if (!this.theme || this.progress.stars(this.id, this.total) < 3) {
+    // Accès réservé : thème valide, 3 étoiles obtenues, et mode compatible.
+    if (
+      !this.theme ||
+      (this.mode === 'listen' && !this.theme.listen) ||
+      this.progress.stars(this.id, this.total) < 3
+    ) {
       this.router.navigateByUrl('/');
       return;
     }

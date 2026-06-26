@@ -180,7 +180,8 @@ export class Quiz {
   private locked = false;
 
   constructor() {
-    if (!this.theme) {
+    // Thème invalide, ou mode « écoute » demandé sur un thème non écoutable → retour accueil.
+    if (!this.theme || (this.mode === 'listen' && !this.theme.listen)) {
       this.router.navigateByUrl('/');
       return;
     }

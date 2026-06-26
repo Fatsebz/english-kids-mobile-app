@@ -15,13 +15,13 @@ import { findTheme } from '../../data/themes';
   imports: [RouterLink],
   template: `
     <div class="play-buttons">
-      @for (m of modes(); track m) {
+      @for (m of availableModes(); track m) {
         <a class="btn play" [class.btn--green]="m === 'listen'" [routerLink]="['/quiz', themeId(), m]">
           {{ m === 'listen' ? '👂 Écoute' : '📖 Lis le mot' }}
         </a>
       }
 
-      @for (m of modes(); track m) {
+      @for (m of availableModes(); track m) {
         @if (unlocked()) {
           <a class="btn grand" [routerLink]="['/test', themeId(), m]">
             🏆 {{ testLabel(m) }}
@@ -71,9 +71,15 @@ export class PlayButtons {
 
   readonly themeId = input.required<string>();
 
-  readonly modes = computed<readonly QuizMode[]>(() => {
+  private readonly modes = computed<readonly QuizMode[]>(() => {
     const id = this.profiles.current()?.id;
     return id ? this.settings.modesFor(id) : (['read', 'listen'] as const);
+  });
+
+  /** Modes réellement proposables : retire « écoute » si le thème ne le supporte pas. */
+  readonly availableModes = computed<readonly QuizMode[]>(() => {
+    const listenable = findTheme(this.themeId())?.listen ?? true;
+    return this.modes().filter((m) => m !== 'listen' || listenable);
   });
 
   readonly unlocked = computed(() => {
@@ -83,7 +89,7 @@ export class PlayButtons {
 
   /** Libellé du grand test : précise le mode seulement s'il y en a deux. */
   testLabel(mode: QuizMode): string {
-    if (this.modes().length < 2) return 'Grand test';
+    if (this.availableModes().length < 2) return 'Grand test';
     return mode === 'listen' ? 'Grand test 👂' : 'Grand test 📖';
   }
 }

@@ -110,6 +110,11 @@ export class Home {
   readonly themes = computed(() => {
     const id = this.profiles.current()?.id;
     if (!id) return THEMES;
-    return THEMES.filter((t) => this.settings.isThemeEnabled(id, t.id));
+    const modes = this.settings.modesFor(id);
+    return THEMES.filter((t) => {
+      if (!this.settings.isThemeEnabled(id, t.id)) return false;
+      // Au moins un mode utilisable : « lecture » marche partout, « écoute » seulement si supporté.
+      return modes.some((m) => m === 'read' || t.listen);
+    });
   });
 }
