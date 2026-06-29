@@ -1,0 +1,8 @@
+Version 1.3.0 — Nouveautés
+• 2 nouveaux thèmes : Jeux et Pièces de la maison (avec Sport et Musique dans « Loisirs »)
+• Option « Je sais lire » par enfant : masque les thèmes en texte (heure, jours, mois) pour les non-lecteurs
+• Prononciation en français en plus de l'anglais
+• Choix de la voix anglaise (homme/femme, GB ou US) et de la vitesse, par enfant
+• Code parent désactivable
+• Réglages réorganisés + liste des mots par thème
+• Écran de démarrage plus net

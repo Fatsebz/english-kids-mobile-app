@@ -1,0 +1,8 @@
+Version 1.3.0 — What's new
+• 2 new themes: Games and Rooms of the house (grouped with Sport and Music under "Hobbies")
+• "I can read" option per child: hides text-only themes (time, days, months) for non-readers
+• French pronunciation added alongside English
+• Pick the English voice (male/female, UK or US) and speed, per child
+• Parental code can be turned off
+• Reorganized settings + list of all words by theme
+• Sharper splash screen
