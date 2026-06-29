@@ -5,6 +5,7 @@ import { AVATARS, Profile, ProfileService } from '../../core/profile.service';
 export interface ProfileDraft {
   name: string;
   img: string;
+  canRead: boolean;
 }
 
 /**
@@ -39,6 +40,14 @@ export interface ProfileDraft {
             </button>
           }
         </div>
+
+        <label class="read-toggle">
+          <input type="checkbox" [checked]="canRead()" (change)="canRead.set($any($event.target).checked)" />
+          <span>📖 Je sais lire</span>
+        </label>
+        <p class="read-hint">
+          Décoche pour un non-lecteur : les thèmes « texte » (l'heure, les jours, les mois…) seront masqués.
+        </p>
 
         <div class="actions">
           <button class="btn btn--ghost" (click)="cancel.emit()">Annuler</button>
@@ -122,6 +131,25 @@ export interface ProfileDraft {
       .avatar.sel img {
         border-color: var(--c-green);
       }
+      .read-toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.15rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 4px;
+      }
+      .read-toggle input[type='checkbox'] {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 auto;
+      }
+      .read-hint {
+        margin: -6px 0 0;
+        font-size: 0.9rem;
+        opacity: 0.65;
+      }
       .actions {
         display: flex;
         gap: 12px;
@@ -154,6 +182,7 @@ export class ProfileEditor implements OnInit {
 
   readonly name = signal('');
   readonly img = signal(AVATARS[0].img);
+  readonly canRead = signal(true);
 
   readonly canSave = computed(() => this.name().trim().length > 0 && !!this.img());
 
@@ -162,11 +191,12 @@ export class ProfileEditor implements OnInit {
     if (p) {
       this.name.set(p.name);
       this.img.set(p.img);
+      this.canRead.set(p.canRead !== false);
     }
   }
 
   submit(): void {
     if (!this.canSave()) return;
-    this.save.emit({ name: this.name().trim(), img: this.img() });
+    this.save.emit({ name: this.name().trim(), img: this.img(), canRead: this.canRead() });
   }
 }

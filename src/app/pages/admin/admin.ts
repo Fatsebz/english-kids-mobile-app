@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AVATARS, Profile, ProfileService } from '../../core/profile.service';
 import { ProgressService } from '../../core/progress.service';
@@ -40,39 +40,17 @@ const CREATE_TARGET = '__create__';
           </div>
         </div>
       } @else {
-        <section class="card block acc">
-          <button class="acc-head" (click)="toggle('profiles')">
-            <span>👤 Profils</span><span class="acc-icon">{{ open() === 'profiles' ? '−' : '+' }}</span>
-          </button>
-          @if (open() === 'profiles') {
-            <div class="rows">
-              @for (p of children(); track p.id) {
-                <div class="row prof-row">
-                  <span class="prof"><img [src]="p.img" alt="" />{{ p.name }}</span>
-                  <span class="prof-actions">
-                    <button class="mini" (click)="editProfile(p)" aria-label="Renommer">✏️</button>
-                    <button class="mini danger-mini" (click)="deleteProfile(p)" aria-label="Supprimer">🗑️</button>
-                  </span>
-                </div>
-              }
-              @if (!children().length) {
-                <p class="hint-txt">Aucun profil. Ajoutes-en un ci-dessous.</p>
-              }
-            </div>
-            <button class="btn btn--green" [disabled]="children().length >= maxProfiles" (click)="addProfile()">
-              ➕ Ajouter un profil
-            </button>
-          }
-        </section>
-
         @if (children().length) {
-          <div class="tabs">
-            @for (c of children(); track c.id) {
-              <button class="tab" [class.active]="child() === c.id" (click)="child.set(c.id)">
-                {{ c.name }}
+          <h2 class="group-head child-head">
+            <span>👤 Réglages pour</span>
+            @if (children().length > 1) {
+              <button class="child-switch" (click)="cycleChild()" aria-label="Changer de profil">
+                {{ childName() }} <span class="switch-ico" aria-hidden="true">🔁</span>
               </button>
+            } @else {
+              <span class="child-name">{{ childName() }}</span>
             }
-          </div>
+          </h2>
 
           <section class="card block acc">
             <button class="acc-head" (click)="toggle('themes')">
@@ -111,10 +89,11 @@ const CREATE_TARGET = '__create__';
         </section>
 
         <section class="card block acc">
-          <button class="acc-head" (click)="toggle('rate')">
-            <span>Vitesse de la voix</span><span class="acc-icon">{{ open() === 'rate' ? '−' : '+' }}</span>
+          <button class="acc-head" (click)="toggle('voice')">
+            <span>🔊 Voix</span><span class="acc-icon">{{ open() === 'voice' ? '−' : '+' }}</span>
           </button>
-          @if (open() === 'rate') {
+          @if (open() === 'voice') {
+            <p class="sub-label">Vitesse</p>
             <div class="rate-row">
               <input
                 type="range"
@@ -126,6 +105,42 @@ const CREATE_TARGET = '__create__';
               />
               <span class="rate-val">{{ settings.rateFor(child()) }}%</span>
             </div>
+
+            @if (voices().length) {
+              <p class="sub-label">Choix de la voix (homme / femme, 🇬🇧 ou 🇺🇸)</p>
+              <div class="voice-field">
+                <button class="voice-sel" (click)="voiceOpen.set(!voiceOpen())" aria-haspopup="listbox">
+                  <span class="voice-cur">{{ currentVoiceLabel() }}</span>
+                  <span class="caret" aria-hidden="true">{{ voiceOpen() ? '▴' : '▾' }}</span>
+                </button>
+                @if (voiceOpen()) {
+                  <div class="voice-list" role="listbox">
+                    <button
+                      class="voice-opt"
+                      [class.sel]="settings.voiceFor(child()) === ''"
+                      (click)="selectVoice('')"
+                    >
+                      Voix par défaut
+                    </button>
+                    @for (v of voices(); track v.uri) {
+                      <button
+                        class="voice-opt"
+                        [class.sel]="settings.voiceFor(child()) === v.uri"
+                        (click)="selectVoice(v.uri)"
+                      >
+                        {{ v.label }}
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="hint-txt">
+                Aucune autre voix disponible sur cet appareil. Tu peux installer des voix anglaises
+                dans les réglages Android (Synthèse vocale).
+              </p>
+            }
+
             <button class="btn" (click)="testVoice()">🔊 Tester la voix</button>
           }
         </section>
@@ -135,30 +150,70 @@ const CREATE_TARGET = '__create__';
             <span>Réinitialiser l'avancement</span><span class="acc-icon">{{ open() === 'reset' ? '−' : '+' }}</span>
           </button>
           @if (open() === 'reset') {
-            <button class="btn danger" (click)="resetAll()">Tout réinitialiser pour {{ childName() }}</button>
-            <div class="rows">
-              @for (t of themes; track t.id) {
-                <div class="row">
-                  <span>{{ t.tileEmoji }} {{ t.title }}</span>
-                  <button class="mini" (click)="resetTheme(t.id)">Réinitialiser</button>
-                </div>
-              }
-            </div>
+            @if (resettableThemes().length) {
+              <button class="btn danger" (click)="resetAll()">Tout réinitialiser pour {{ childName() }}</button>
+              <div class="rows">
+                @for (t of resettableThemes(); track t.id) {
+                  <div class="row">
+                    <span>{{ t.tileEmoji }} {{ t.title }}</span>
+                    <button class="mini" (click)="resetTheme(t.id)">Réinitialiser</button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="hint-txt">Aucun avancement à réinitialiser pour {{ childName() }}.</p>
+            }
           }
         </section>
         }
+
+        <h2 class="group-head">🛠️ Réglages généraux</h2>
+
+        <section class="card block acc">
+          <button class="acc-head" (click)="toggle('profiles')">
+            <span>👤 Profils</span><span class="acc-icon">{{ open() === 'profiles' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'profiles') {
+            <div class="rows">
+              @for (p of children(); track p.id) {
+                <div class="row prof-row">
+                  <span class="prof"><img [src]="p.img" alt="" />{{ p.name }}</span>
+                  <span class="prof-actions">
+                    <button class="mini" (click)="editProfile(p)" aria-label="Renommer">✏️</button>
+                    <button class="mini danger-mini" (click)="deleteProfile(p)" aria-label="Supprimer">🗑️</button>
+                  </span>
+                </div>
+              }
+              @if (!children().length) {
+                <p class="hint-txt">Aucun profil. Ajoutes-en un ci-dessous.</p>
+              }
+            </div>
+            <button class="btn btn--green" [disabled]="children().length >= maxProfiles" (click)="addProfile()">
+              ➕ Ajouter un profil
+            </button>
+          }
+        </section>
 
         <section class="card block acc">
           <button class="acc-head" (click)="toggle('pin')">
             <span>Code parent</span><span class="acc-icon">{{ open() === 'pin' ? '−' : '+' }}</span>
           </button>
           @if (open() === 'pin') {
-            <div class="pin-change">
-              <input #np type="tel" inputmode="numeric" maxlength="4" placeholder="Nouveau code" />
-              <button class="icon-btn" (click)="changePin(np)" aria-label="Changer le code" title="Changer le code">✓</button>
-            </div>
-            @if (pinError()) { <p class="err">Le code doit comporter exactement 4 chiffres.</p> }
-            @if (pinSaved()) { <p class="ok">Code mis à jour ✅</p> }
+            <label class="row">
+              <span>🔒 Protéger les réglages par un code</span>
+              <input type="checkbox" [checked]="pinProtected()" (change)="togglePinProtection($event)" />
+            </label>
+            @if (pinProtected()) {
+              <p class="hint-txt">Modifier le code à 4 chiffres :</p>
+              <div class="pin-change">
+                <input #np type="tel" inputmode="numeric" maxlength="4" placeholder="Nouveau code" />
+                <button class="icon-btn" (click)="changePin(np)" aria-label="Changer le code" title="Changer le code">✓</button>
+              </div>
+              @if (pinError()) { <p class="err">Le code doit comporter exactement 4 chiffres.</p> }
+              @if (pinSaved()) { <p class="ok">Code mis à jour ✅</p> }
+            } @else {
+              <p class="hint-txt">⚠️ Les réglages sont accessibles sans code.</p>
+            }
           }
         </section>
 
@@ -216,6 +271,40 @@ const CREATE_TARGET = '__create__';
         </section>
 
         <section class="card block acc">
+          <button class="acc-head" (click)="toggle('items')">
+            <span>📋 Liste des éléments</span><span class="acc-icon">{{ open() === 'items' ? '−' : '+' }}</span>
+          </button>
+          @if (open() === 'items') {
+            @for (t of themes; track t.id) {
+              <div class="theme-group">
+                <h3 class="theme-title">{{ t.tileEmoji }} {{ t.title }} <span class="theme-fr">· {{ t.fr }}</span></h3>
+                <div class="item-list">
+                  @for (it of t.items; track it.key) {
+                    <div class="item">
+                      <span class="vis">
+                        @if (it.kind === 'color') {
+                          <span class="cdot" [class.bordered]="it.light" [style.background]="it.display"></span>
+                        } @else if (it.img) {
+                          <img [src]="it.img" alt="" />
+                        } @else if (it.kind === 'word') {
+                          📝
+                        } @else {
+                          {{ it.display }}
+                        }
+                      </span>
+                      <span class="txt">
+                        <span class="en">{{ it.label }}</span>
+                        <span class="fr-tr">{{ it.fr }}</span>
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </section>
+
+        <section class="card block acc">
           <button class="acc-head" (click)="toggle('about')">
             <span>À propos</span><span class="acc-icon">{{ open() === 'about' ? '−' : '+' }}</span>
           </button>
@@ -254,6 +343,94 @@ const CREATE_TARGET = '__create__';
       .acc {
         padding: 0;
       }
+      /* En-têtes de groupe (séparation profil / général) */
+      .group-head {
+        margin: 22px 4px 2px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        opacity: 0.85;
+        color: var(--c-text);
+        border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 6px;
+      }
+      .group-head:first-of-type {
+        margin-top: 4px;
+      }
+      /* Liste des éléments (#10) */
+      .theme-group {
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+      .theme-group:first-child {
+        border-top: none;
+        margin-top: 0;
+        padding-top: 0;
+      }
+      .theme-title {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--c-text);
+      }
+      .theme-fr {
+        font-weight: 400;
+        opacity: 0.6;
+        font-size: 0.9rem;
+      }
+      .item-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 14px;
+      }
+      .item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        min-width: 0;
+        padding: 3px 0;
+      }
+      .item .vis {
+        flex: 0 0 26px;
+        text-align: center;
+        font-size: 1.2rem;
+      }
+      .item .vis img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        vertical-align: middle;
+      }
+      .item .cdot {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        vertical-align: middle;
+      }
+      .item .cdot.bordered {
+        border: 1px solid #d9dce1;
+      }
+      .item .txt {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.15;
+      }
+      .item .en {
+        font-weight: 600;
+        text-transform: capitalize;
+        overflow-wrap: anywhere;
+      }
+      .item .fr-tr {
+        font-size: 0.8rem;
+        opacity: 0.55;
+        text-transform: capitalize;
+        overflow-wrap: anywhere;
+      }
       .acc-head {
         width: 100%;
         display: flex;
@@ -286,25 +463,38 @@ const CREATE_TARGET = '__create__';
       .acc > *:not(.acc-head):last-child {
         margin-bottom: 16px;
       }
-      .tabs {
+      .child-head {
         display: flex;
-        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px 10px;
       }
-      .tab {
-        flex: 1;
+      .child-head .child-name {
+        text-transform: none;
+        color: var(--c-blue);
+      }
+      .child-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         border: none;
-        border-radius: var(--radius);
+        border-radius: 999px;
         font-family: inherit;
         font-weight: 700;
-        font-size: 1.1rem;
-        padding: 12px;
-        background: rgba(255, 255, 255, 0.6);
-        color: var(--c-text);
+        font-size: 1rem;
+        text-transform: none;
+        padding: 8px 16px;
+        background: #fff;
+        color: var(--c-blue);
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.16);
         cursor: pointer;
       }
-      .tab.active {
-        background: #fff;
-        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.16);
+      .child-switch:active {
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.16);
+      }
+      .switch-ico {
+        font-size: 0.95rem;
       }
       .rows {
         display: flex;
@@ -473,6 +663,80 @@ const CREATE_TARGET = '__create__';
         min-width: 52px;
         text-align: right;
       }
+      /* Liste de voix personnalisée (largeur 100 % du champ, jamais de débordement) */
+      .voice-field {
+        position: relative;
+        margin-bottom: 12px;
+      }
+      .voice-sel {
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-family: inherit;
+        font-size: 1rem;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 14px;
+        background: #fff;
+        color: var(--c-text);
+        cursor: pointer;
+        text-align: left;
+      }
+      .voice-cur {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .caret {
+        flex: 0 0 auto;
+        color: var(--c-blue);
+      }
+      .voice-list {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        width: 100%;
+        box-sizing: border-box;
+        max-height: 240px;
+        overflow-y: auto;
+        background: #fff;
+        border: 2px solid #ddd;
+        border-radius: 14px;
+        box-shadow: 0 10px 24px var(--c-shadow);
+        z-index: 20;
+      }
+      .voice-opt {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+        font-family: inherit;
+        font-size: 1rem;
+        padding: 12px;
+        border: none;
+        border-bottom: 1px solid #eee;
+        background: none;
+        color: var(--c-text);
+        cursor: pointer;
+        overflow-wrap: anywhere;
+      }
+      .voice-opt:last-child {
+        border-bottom: none;
+      }
+      .voice-opt.sel {
+        background: #eaf3ff;
+        font-weight: 700;
+      }
+      .sub-label {
+        margin: 4px 0 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        opacity: 0.8;
+      }
       .hint-txt {
         margin: 0 0 12px;
         font-size: 0.95rem;
@@ -560,13 +824,16 @@ export class Admin {
 
   readonly children = this.profiles.profiles;
   readonly maxProfiles = this.profiles.maxProfiles;
+  readonly voices = this.audio.voices;
   readonly themes = THEMES;
   readonly appVersion = APP_VERSION;
   readonly changelog = CHANGELOG;
   readonly pad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
   readonly createTarget = CREATE_TARGET;
 
-  readonly unlocked = signal(false);
+  // Si le parent a retiré la protection, l'écran s'ouvre directement (pas de pavé PIN).
+  readonly unlocked = signal(!this.settings.pinEnabled());
+  readonly pinProtected = signal(this.settings.pinEnabled());
   /** Section d'accordéon ouverte (une seule à la fois ; '' = toutes repliées). */
   readonly open = signal('');
   readonly entry = signal('');
@@ -574,6 +841,17 @@ export class Admin {
   readonly child = signal(this.children()[0]?.id ?? '');
   readonly pinSaved = signal(false);
   readonly pinError = signal(false);
+  /** Liste de voix personnalisée ouverte (remplace le `<select>` natif qui débordait sous Chrome). */
+  readonly voiceOpen = signal(false);
+  /** Incrémenté après une réinitialisation pour recalculer la liste des thèmes réinitialisables. */
+  private readonly resetTick = signal(0);
+
+  /** Thèmes ayant un avancement pour l'enfant courant (les seuls à proposer en réinitialisation). */
+  readonly resettableThemes = computed(() => {
+    this.resetTick();
+    const ids = new Set(this.progress.themesWithProgress(this.child()));
+    return this.themes.filter((t) => ids.has(t.id));
+  });
   readonly backupText = signal('');
   readonly backupMsg = signal('');
   readonly backupError = signal('');
@@ -590,6 +868,14 @@ export class Admin {
 
   childName(): string {
     return this.children().find((c) => c.id === this.child())?.name ?? '';
+  }
+
+  /** Passe au profil suivant (le nom de profil sert de bouton quand il y a plusieurs profils). */
+  cycleChild(): void {
+    const list = this.children();
+    if (list.length < 2) return;
+    const i = list.findIndex((c) => c.id === this.child());
+    this.child.set(list[(i + 1) % list.length].id);
   }
 
   // ---- Profils ----
@@ -611,9 +897,9 @@ export class Admin {
   onEditorSave(draft: ProfileDraft): void {
     const target = this.editing();
     if (target) {
-      this.profiles.renameProfile(target.id, draft.name, draft.img);
+      this.profiles.renameProfile(target.id, draft.name, draft.img, draft.canRead);
     } else {
-      const created = this.profiles.addProfile(draft.name, draft.img);
+      const created = this.profiles.addProfile(draft.name, draft.img, draft.canRead);
       if (created) this.child.set(created.id);
     }
     this.closeEditor();
@@ -665,18 +951,37 @@ export class Admin {
     this.settings.setRate(this.child(), Number((ev.target as HTMLInputElement).value));
   }
 
+  /** Libellé de la voix actuellement sélectionnée pour l'enfant courant. */
+  currentVoiceLabel(): string {
+    const uri = this.settings.voiceFor(this.child());
+    if (!uri) return 'Voix par défaut';
+    return this.voices().find((v) => v.uri === uri)?.label ?? 'Voix par défaut';
+  }
+
+  selectVoice(uri: string): void {
+    this.settings.setVoice(this.child(), uri);
+    this.voiceOpen.set(false);
+  }
+
   testVoice(): void {
-    this.audio.speak('Hello! Cat, dog, sun.', this.settings.rateFor(this.child()) / 100);
+    this.audio.speak(
+      'Hello! Cat, dog, sun.',
+      this.settings.rateFor(this.child()) / 100,
+      'en-US',
+      this.settings.voiceFor(this.child()),
+    );
   }
 
   resetAll(): void {
     if (confirm(`Effacer tout l'avancement de ${this.childName()} ?`)) {
       this.progress.resetProfile(this.child());
+      this.resetTick.update((n) => n + 1);
     }
   }
 
   resetTheme(themeId: string): void {
     this.progress.resetTheme(this.child(), themeId);
+    this.resetTick.update((n) => n + 1);
   }
 
   /** Exporte toutes les données `ek.*` (hors profil courant) en JSON. */
@@ -837,6 +1142,12 @@ export class Admin {
     if (id === 'vico') return { name: 'Victor', img: 'profiles/vico.webp' };
     if (id === 'bille') return { name: 'Bertille', img: 'profiles/bille.webp' };
     return { name: id, img: AVATARS[0].img };
+  }
+
+  togglePinProtection(ev: Event): void {
+    const on = (ev.target as HTMLInputElement).checked;
+    this.settings.setPinEnabled(on);
+    this.pinProtected.set(on);
   }
 
   changePin(input: HTMLInputElement): void {

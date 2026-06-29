@@ -6,7 +6,7 @@
  * APP_VERSION, puis aligner `android/app/build.gradle` (versionName = APP_VERSION,
  * incrémenter versionCode) et `package.json`.
  */
-export const APP_VERSION = '1.2.1';
+export const APP_VERSION = '1.3.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,19 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.3.0',
+    date: '2026-06-29',
+    changes: [
+      'Nouveaux thèmes : Jeux 🎲 et Pièces de la maison 🛋️, regroupés (Loisirs : jeux, sport, musique)',
+      'Option « Je sais lire » par profil : masque les thèmes « texte » (heure, jours, mois) pour les non-lecteurs',
+      'Mode apprentissage : bouton de prononciation en français 🇫🇷 en plus de l’anglais 🇬🇧',
+      'Choix de la voix anglaise par profil (homme / femme, britannique 🇬🇧 ou américaine 🇺🇸)',
+      'Possibilité de désactiver le code parent',
+      'Réglages réorganisés (réglages de l’enfant / généraux) + liste de tous les éléments par thème',
+      'Écran de démarrage plus net',
+    ],
+  },
   {
     version: '1.2.1',
     date: '2026-06-26',

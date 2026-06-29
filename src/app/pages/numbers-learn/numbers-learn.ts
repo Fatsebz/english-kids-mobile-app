@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { AudioService } from '../../core/audio.service';
 import { NUMBERS, NumberItem } from '../../data/numbers.data';
 import { PlayButtons } from '../../shared/play-buttons/play-buttons';
+import { SayFlags } from '../../shared/say-flags/say-flags';
 
 @Component({
   selector: 'app-numbers-learn',
-  imports: [RouterLink, PlayButtons],
+  imports: [RouterLink, PlayButtons, SayFlags],
   template: `
     <main class="screen">
       <div class="topbar">
@@ -20,9 +21,7 @@ import { PlayButtons } from '../../shared/play-buttons/play-buttons';
       <div class="stage card" (click)="say(current())">
         <div class="digit anim-pop" [attr.key]="current().value">{{ current().value }}</div>
         <div class="word">{{ current().word }}</div>
-        <button class="btn-round speak" (click)="say(current()); $event.stopPropagation()" aria-label="Écouter">
-          🔊
-        </button>
+        <app-say-flags [en]="current().word" [fr]="current().value + ''" />
       </div>
 
       <div class="grid">

@@ -2,7 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Theme, THEMES } from '../../data/themes';
 import { findGroup } from '../../data/groups';
-import { ProfileService } from '../../core/profile.service';
 import { SettingsService } from '../../core/settings.service';
 import { ThemeTile } from '../../shared/theme-tile/theme-tile';
 
@@ -40,7 +39,6 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
   ],
 })
 export class Group {
-  private readonly profiles = inject(ProfileService);
   private readonly settings = inject(SettingsService);
   private readonly router = inject(Router);
 
@@ -54,16 +52,9 @@ export class Group {
     }
   }
 
-  private visible(t: Theme): boolean {
-    const id = this.profiles.current()?.id;
-    if (!id) return true;
-    if (!this.settings.isThemeEnabled(id, t.id)) return false;
-    return this.settings.modesFor(id).some((m) => m === 'read' || t.listen);
-  }
-
   readonly themes = computed(() =>
     (this.group?.themeIds ?? [])
       .map((tid) => THEMES.find((t) => t.id === tid))
-      .filter((t): t is Theme => !!t && this.visible(t)),
+      .filter((t): t is Theme => !!t && this.settings.isThemeVisibleForCurrent(t)),
   );
 }

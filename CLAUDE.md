@@ -218,6 +218,12 @@ npx @capacitor/assets generate --android --assetPath resources `
 > régénération `@capacitor/assets`, **réappliquer** ces deux points (le générateur réécrit `styles.xml`
 > vers `@drawable/splash` et recrée les `drawable-land*` / `splash.png`).
 
+> **Icône de splash nette** : `windowSplashScreenAnimatedIcon` pointe vers `@drawable/splash_icon`
+> (`res/drawable-nodpi/splash_icon.png`, 1152², logo ~70 % du canevas) et **pas** vers le premier plan
+> adaptatif `ic_launcher_foreground` (dont le logo, trop petit, était fortement agrandi par le système →
+> splash flou). Régénérer avec `node resources/_gen-splash-icon.mjs`. À réappliquer aussi après une
+> régénération `@capacitor/assets`.
+
 ## Versionnage & changelog
 - **Source unique** : `src/app/data/changelog.ts` (`APP_VERSION` + `CHANGELOG`). Affiché dans l'écran
   **⚙️ Réglages** (section « À propos » + version sur l'écran de code).

@@ -4,10 +4,11 @@ import { AudioService } from '../../core/audio.service';
 import { EmojiItem } from '../../data/emoji-item';
 import { findModule } from '../../data/modules';
 import { PlayButtons } from '../../shared/play-buttons/play-buttons';
+import { SayFlags } from '../../shared/say-flags/say-flags';
 
 @Component({
   selector: 'app-emoji-learn',
-  imports: [RouterLink, PlayButtons],
+  imports: [RouterLink, PlayButtons, SayFlags],
   template: `
     @if (current(); as cur) {
       <main class="screen">
@@ -29,9 +30,7 @@ import { PlayButtons } from '../../shared/play-buttons/play-buttons';
           }
           <div class="name">{{ cur.word }}</div>
           @if (!isWord) { <div class="fr">{{ cur.fr }}</div> }
-          <button class="btn-round speak" (click)="say(cur); $event.stopPropagation()" aria-label="Écouter">
-            🔊
-          </button>
+          <app-say-flags [en]="cur.word" [fr]="cur.fr" />
         </div>
 
         <div class="grid emojis">

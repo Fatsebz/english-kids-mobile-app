@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ProfileService } from './profile.service';
-import { THEMES } from '../data/themes';
+import { THEMES, Theme } from '../data/themes';
 
 export type QuizMode = 'read' | 'listen';
 export const QUIZ_MODES: QuizMode[] = ['read', 'listen'];
@@ -14,9 +14,12 @@ interface ChildSettings {
   modes: QuizMode[];
   /** Vitesse de la voix en % de la normale (50 à 100). */
   rate: number;
+  /** Voix anglaise choisie (voiceURI). Vide = voix par défaut de l'appareil. */
+  voiceUri: string;
 }
 
 const PIN_KEY = 'ek.adminPin';
+const PIN_ENABLED_KEY = 'ek.adminPinEnabled';
 const DEFAULT_PIN = '1234';
 const DEFAULT_RATE = 90;
 const RATE_MIN = 50;
@@ -48,6 +51,25 @@ export class SettingsService {
   rateFor(id: string): number {
     return this.get(id).rate;
   }
+  /** Voix anglaise choisie pour le profil (voiceURI ; vide = défaut). */
+  voiceFor(id: string): string {
+    return this.get(id).voiceUri;
+  }
+
+  /**
+   * Un thème est-il visible pour le profil courant ?
+   * - activé dans les réglages,
+   * - thème « texte » (sans visuel par élément, `listen: false`) masqué si le profil ne sait pas lire,
+   * - au moins un mode utilisable est disponible (lecture, ou écoute si le thème la supporte).
+   * Sans profil courant : tout est visible.
+   */
+  isThemeVisibleForCurrent(theme: Theme): boolean {
+    const p = this.profiles.current();
+    if (!p) return true;
+    if (!this.isThemeEnabled(p.id, theme.id)) return false;
+    if (!theme.listen && p.canRead === false) return false;
+    return this.modesFor(p.id).some((m) => m === 'read' || theme.listen);
+  }
 
   // ---- Écriture ----
   setThemeEnabled(id: string, themeId: string, on: boolean): void {
@@ -70,6 +92,9 @@ export class SettingsService {
   }
   setRate(id: string, percent: number): void {
     this.save(id, { ...this.get(id), rate: clampRate(percent) });
+  }
+  setVoice(id: string, voiceUri: string): void {
+    this.save(id, { ...this.get(id), voiceUri });
   }
 
   /** Supprime les réglages d'un profil (à la suppression du profil). */
@@ -105,6 +130,22 @@ export class SettingsService {
     }
   }
 
+  /** Le code parent protège-t-il l'accès aux réglages ? (désactivable). Défaut : oui. */
+  pinEnabled(): boolean {
+    try {
+      return localStorage.getItem(PIN_ENABLED_KEY) !== '0';
+    } catch {
+      return true;
+    }
+  }
+  setPinEnabled(on: boolean): void {
+    try {
+      localStorage.setItem(PIN_ENABLED_KEY, on ? '1' : '0');
+    } catch {
+      /* ignore */
+    }
+  }
+
   // ---- Interne ----
   // Lecture PURE (jamais d'écriture de signal ici) : sinon NG0600 si appelée pendant le rendu.
   private get(id: string): ChildSettings {
@@ -122,12 +163,13 @@ export class SettingsService {
           hiddenThemes: Array.isArray(parsed.hiddenThemes) ? parsed.hiddenThemes : [],
           modes: parsed.modes?.length ? parsed.modes : [...QUIZ_MODES],
           rate: parsed.rate ? clampRate(parsed.rate) : DEFAULT_RATE,
+          voiceUri: typeof parsed.voiceUri === 'string' ? parsed.voiceUri : '',
         };
       }
     } catch {
       /* ignore */
     }
-    return { hiddenThemes: [], modes: [...QUIZ_MODES], rate: DEFAULT_RATE };
+    return { hiddenThemes: [], modes: [...QUIZ_MODES], rate: DEFAULT_RATE, voiceUri: '' };
   }
 
   private save(id: string, value: ChildSettings): void {

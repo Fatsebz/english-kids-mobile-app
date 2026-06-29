@@ -42,6 +42,14 @@ export const GROUPS: ThemeGroup[] = [
     gradient: 'linear-gradient(150deg, #ff8c1a, #ffd23f)',
     themeIds: ['food', 'fruits', 'vegetables', 'tableware'],
   },
+  {
+    id: 'leisure',
+    title: 'Hobbies',
+    fr: 'Les loisirs',
+    tileEmoji: '🎲',
+    gradient: 'linear-gradient(150deg, #8e44ad, #2ec27e)',
+    themeIds: ['games', 'sports', 'instruments'],
+  },
 ];
 
 export function findGroup(id: string | null | undefined): ThemeGroup | undefined {

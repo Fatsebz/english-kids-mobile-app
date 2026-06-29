@@ -7,6 +7,11 @@ export interface Profile {
   name: string;
   /** Chemin de l'avatar (bundlé dans public/). */
   img: string;
+  /**
+   * L'enfant sait lire : les thèmes purement « texte » (mot FR/EN sans visuel, ex. Time,
+   * Days, Months) lui sont proposés. Si `false`, ils sont masqués. Défaut `true`.
+   */
+  canRead: boolean;
 }
 
 /** Choix d'avatars disponibles à la création d'un profil (images bundlées). */
@@ -64,26 +69,26 @@ export class ProfileService {
   }
 
   /** Crée un profil (prénom tronqué à 20). Renvoie le profil créé, ou null si la limite est atteinte. */
-  addProfile(name: string, img: string): Profile | null {
+  addProfile(name: string, img: string, canRead = true): Profile | null {
     if (this.profiles().length >= MAX_PROFILES) return null;
-    const profile: Profile = { id: this.newId(), name: this.cleanName(name), img };
+    const profile: Profile = { id: this.newId(), name: this.cleanName(name), img, canRead };
     this.profiles.update((list) => [...list, profile]);
     this.persistList();
     return profile;
   }
 
   /** Recrée un profil en conservant un id précis (restauration de sauvegarde). No-op si l'id existe déjà. */
-  createWithId(id: string, name: string, img: string): Profile | null {
+  createWithId(id: string, name: string, img: string, canRead = true): Profile | null {
     if (this.hasProfileId(id)) return null;
-    const profile: Profile = { id, name: this.cleanName(name), img };
+    const profile: Profile = { id, name: this.cleanName(name), img, canRead };
     this.profiles.update((list) => [...list, profile]);
     this.persistList();
     return profile;
   }
 
-  renameProfile(id: string, name: string, img: string): void {
+  renameProfile(id: string, name: string, img: string, canRead = true): void {
     this.profiles.update((list) =>
-      list.map((p) => (p.id === id ? { ...p, name: this.cleanName(name), img } : p)),
+      list.map((p) => (p.id === id ? { ...p, name: this.cleanName(name), img, canRead } : p)),
     );
     this.persistList();
     if (this.current()?.id === id) {
@@ -127,7 +132,10 @@ export class ProfileService {
       if (raw) {
         const parsed = JSON.parse(raw) as Profile[];
         if (Array.isArray(parsed)) {
-          return parsed.filter((p) => p && p.id && p.name && p.img);
+          return parsed
+            .filter((p) => p && p.id && p.name && p.img)
+            // Rétro-compat : un profil sauvegardé avant l'option « je sais lire » est considéré lecteur.
+            .map((p) => ({ ...p, canRead: p.canRead !== false }));
         }
       }
     } catch {

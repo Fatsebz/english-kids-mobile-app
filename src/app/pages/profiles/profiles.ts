@@ -142,7 +142,7 @@ export class Profiles {
   }
 
   create(draft: ProfileDraft): void {
-    const created = this.profileSvc.addProfile(draft.name, draft.img);
+    const created = this.profileSvc.addProfile(draft.name, draft.img, draft.canRead);
     this.creating.set(false);
     if (created) {
       this.profileSvc.select(created.id);

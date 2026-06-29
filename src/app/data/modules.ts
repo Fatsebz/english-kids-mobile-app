@@ -28,6 +28,8 @@ import { DAYS } from './days.data';
 import { MONTHS } from './months.data';
 import { INSTRUMENTS } from './instruments.data';
 import { TIMEUNITS } from './time.data';
+import { GAMES } from './games.data';
+import { ROOMS } from './rooms.data';
 
 /** Décrit un module d'apprentissage illustré par des emojis (piloté par les données). */
 export interface LearnModule {
@@ -288,6 +290,22 @@ export const MODULES: LearnModule[] = [
     tileEmoji: '🎸',
     gradient: 'linear-gradient(150deg, #e63946, #4dabf7)',
     items: INSTRUMENTS,
+  },
+  {
+    id: 'games',
+    title: 'Games',
+    fr: 'Les jeux',
+    tileEmoji: '🎲',
+    gradient: 'linear-gradient(150deg, #8e44ad, #2ec27e)',
+    items: GAMES,
+  },
+  {
+    id: 'rooms',
+    title: 'Rooms',
+    fr: 'Les pièces',
+    tileEmoji: '🛋️',
+    gradient: 'linear-gradient(150deg, #2ec27e, #ff6fae)',
+    items: ROOMS,
   },
   {
     id: 'timeunits',

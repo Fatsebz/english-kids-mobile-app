@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import { Theme, THEMES } from '../../data/themes';
 import { GROUPED_THEME_IDS, GROUPS } from '../../data/groups';
 import { ALL_ID, CHAMPIONS_ID } from '../../data/aggregate';
-import { ProfileService } from '../../core/profile.service';
 import { SettingsService } from '../../core/settings.service';
 import { ProgressService } from '../../core/progress.service';
 import { AudioService } from '../../core/audio.service';
@@ -125,7 +124,6 @@ import { ThemeTile } from '../../shared/theme-tile/theme-tile';
   ],
 })
 export class Home {
-  private readonly profiles = inject(ProfileService);
   private readonly settings = inject(SettingsService);
   private readonly progress = inject(ProgressService);
   private readonly audio = inject(AudioService);
@@ -143,12 +141,9 @@ export class Home {
     this.audio.speak(title);
   }
 
-  /** Un thème est visible s'il est activé et qu'au moins un mode utilisable est dispo pour le profil. */
+  /** Un thème est visible s'il est activé, compatible avec le profil (lecture) et qu'un mode est dispo. */
   private visible(t: Theme): boolean {
-    const id = this.profiles.current()?.id;
-    if (!id) return true;
-    if (!this.settings.isThemeEnabled(id, t.id)) return false;
-    return this.settings.modesFor(id).some((m) => m === 'read' || t.listen);
+    return this.settings.isThemeVisibleForCurrent(t);
   }
 
   /** Thèmes hors groupe, visibles. */

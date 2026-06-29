@@ -69,6 +69,12 @@ export class ProgressService {
     this.update(themeId, { ...entry, champion: true });
   }
 
+  /** Ids des thèmes ayant un avancement (éléments réussis ou grand test gagné) pour un profil. */
+  themesWithProgress(profileId: string): string[] {
+    const map = profileId === this.profileId() ? this.state() : this.load(profileId);
+    return Object.keys(map).filter((id) => (map[id]?.mastered?.length ?? 0) > 0 || map[id]?.champion);
+  }
+
   /** Réinitialise toute la progression d'un profil (admin). */
   resetProfile(profileId: string): void {
     this.persistFor(profileId, {});
