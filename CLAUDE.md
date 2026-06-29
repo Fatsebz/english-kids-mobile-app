@@ -11,7 +11,7 @@ Développée en **Angular 22** + **Capacitor 8**, packagée en **APK**. **100 % 
 |-------|-----------------|-------|
 | Node.js | **≥ 22.22.3** (ou 24.15+ / 26+) | Angular CLI 22 refuse Node < 22.22.3 |
 | npm | ≥ 10 | fourni avec Node 22 |
-| JDK | **17 ou 21** | celui d'Android Studio (`…\Android Studio\jbr`) convient |
+| JDK | **21** (obligatoire) | Capacitor 8 (`capacitor-android`) exige *source release 21* — JDK 17 échoue (`invalid source release: 21`). Installé : `C:\Program Files\Java\jdk-21.0.2` |
 | Android SDK | platform 35/36, build-tools 35+ | installé via Android Studio |
 | Android Studio | Ladybug+ | pour ouvrir/déboguer le projet natif |
 
@@ -28,7 +28,7 @@ La version Node par défaut est trop ancienne. Node **22.22.3** est installé vi
 
 Pour les commandes Gradle, définir le JDK :
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.2"   # JDK 21 requis (le JBR d'Android Studio convient aussi s'il est en 21)
 ```
 
 ---
@@ -65,7 +65,7 @@ Puis bouton ▶️ « Run » sur un appareil/émulateur.
 
 ### Générer l'APK en ligne de commande (debug)
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.2"   # JDK 21 requis (le JBR d'Android Studio convient aussi s'il est en 21)
 cd android
 .\gradlew.bat assembleDebug
 ```

@@ -6,7 +6,10 @@ import sharp from 'sharp';
 
 const LOGO = 'public/englishkidz.webp';
 const SIZE = 1152; // canevas recommandé pour windowSplashScreenAnimatedIcon
-const LOGO_FRAC = 0.7; // le logo occupe ~70 % (reste dans la zone de sécurité du splash)
+// Le splash Android 12+ masque l'icône à un cercle (≈ 2/3 du canevas, soit ~768 px de diamètre).
+// Le logo (3:2) doit tenir DANS ce cercle (diagonale ≤ ~720 px), sinon il est rogné sur les bords.
+// 0.5 → largeur ~576 px, diagonale ~692 px : entièrement visible, centré.
+const LOGO_FRAC = 0.5;
 const OUT = 'android/app/src/main/res/drawable-nodpi/splash_icon.png';
 
 const logo = await sharp(LOGO)
