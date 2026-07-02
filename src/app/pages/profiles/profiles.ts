@@ -57,8 +57,8 @@ import { ProfileEditor, ProfileDraft } from '../../shared/profile-editor/profile
       }
       .avatars {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         gap: 24px;
       }
       .avatar {

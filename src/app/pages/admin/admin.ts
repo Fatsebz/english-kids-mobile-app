@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AVATARS, Profile, ProfileService } from '../../core/profile.service';
 import { ProgressService } from '../../core/progress.service';
-import { SettingsService, QuizMode } from '../../core/settings.service';
+import { SettingsService, QuizMode, SpeechLang } from '../../core/settings.service';
 import { AudioService } from '../../core/audio.service';
 import { THEMES } from '../../data/themes';
 import { APP_VERSION, CHANGELOG } from '../../data/changelog';
@@ -93,55 +93,59 @@ const CREATE_TARGET = '__create__';
             <span>🔊 Voix</span><span class="acc-icon">{{ open() === 'voice' ? '−' : '+' }}</span>
           </button>
           @if (open() === 'voice') {
-            <p class="sub-label">Vitesse</p>
-            <div class="rate-row">
-              <input
-                type="range"
-                min="50"
-                max="100"
-                step="10"
-                [value]="settings.rateFor(child())"
-                (input)="setRate($event)"
-              />
-              <span class="rate-val">{{ settings.rateFor(child()) }}%</span>
-            </div>
+            @for (s of voiceSections; track s.lang) {
+              <p class="lang-head">{{ s.title }}</p>
 
-            @if (voices().length) {
-              <p class="sub-label">Choix de la voix (homme / femme, 🇬🇧 ou 🇺🇸)</p>
-              <div class="voice-field">
-                <button class="voice-sel" (click)="voiceOpen.set(!voiceOpen())" aria-haspopup="listbox">
-                  <span class="voice-cur">{{ currentVoiceLabel() }}</span>
-                  <span class="caret" aria-hidden="true">{{ voiceOpen() ? '▴' : '▾' }}</span>
-                </button>
-                @if (voiceOpen()) {
-                  <div class="voice-list" role="listbox">
-                    <button
-                      class="voice-opt"
-                      [class.sel]="settings.voiceFor(child()) === ''"
-                      (click)="selectVoice('')"
-                    >
-                      Voix par défaut
-                    </button>
-                    @for (v of voices(); track v.uri) {
+              <p class="sub-label">Vitesse</p>
+              <div class="rate-row">
+                <input
+                  type="range"
+                  min="50"
+                  max="100"
+                  step="10"
+                  [value]="settings.rateFor(child(), s.lang)"
+                  (input)="setRate($event, s.lang)"
+                />
+                <span class="rate-val">{{ settings.rateFor(child(), s.lang) }}%</span>
+              </div>
+
+              @if (voicesFor(s.lang).length) {
+                <p class="sub-label">Choix de la voix (homme / femme)</p>
+                <div class="voice-field">
+                  <button class="voice-sel" (click)="toggleVoiceMenu(s.lang)" aria-haspopup="listbox">
+                    <span class="voice-cur">{{ currentVoiceLabel(s.lang) }}</span>
+                    <span class="caret" aria-hidden="true">{{ voiceMenu() === s.lang ? '▴' : '▾' }}</span>
+                  </button>
+                  @if (voiceMenu() === s.lang) {
+                    <div class="voice-list" role="listbox">
                       <button
                         class="voice-opt"
-                        [class.sel]="settings.voiceFor(child()) === v.uri"
-                        (click)="selectVoice(v.uri)"
+                        [class.sel]="settings.voiceFor(child(), s.lang) === ''"
+                        (click)="selectVoice('', s.lang)"
                       >
-                        {{ v.label }}
+                        Voix par défaut
                       </button>
-                    }
-                  </div>
-                }
-              </div>
-            } @else {
-              <p class="hint-txt">
-                Aucune autre voix disponible sur cet appareil. Tu peux installer des voix anglaises
-                dans les réglages Android (Synthèse vocale).
-              </p>
-            }
+                      @for (v of voicesFor(s.lang); track v.uri) {
+                        <button
+                          class="voice-opt"
+                          [class.sel]="settings.voiceFor(child(), s.lang) === v.uri"
+                          (click)="selectVoice(v.uri, s.lang)"
+                        >
+                          {{ v.label }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="hint-txt">
+                  Aucune voix {{ s.word }} installée sur cet appareil. Tu peux en installer dans les
+                  réglages Android (Synthèse vocale).
+                </p>
+              }
 
-            <button class="btn" (click)="testVoice()">🔊 Tester la voix</button>
+              <button class="btn" (click)="testVoice(s.lang)">🔊 Tester {{ s.word }}</button>
+            }
           }
         </section>
 
@@ -737,6 +741,18 @@ const CREATE_TARGET = '__create__';
         font-size: 0.95rem;
         opacity: 0.8;
       }
+      .lang-head {
+        margin: 18px 0 6px;
+        font-weight: 700;
+        font-size: 1.05rem;
+      }
+      .lang-head:first-child {
+        margin-top: 2px;
+      }
+      /* Séparateur entre la section anglaise et la section française. */
+      .lang-head + .sub-label {
+        margin-top: 0;
+      }
       .hint-txt {
         margin: 0 0 12px;
         font-size: 0.95rem;
@@ -825,6 +841,12 @@ export class Admin {
   readonly children = this.profiles.profiles;
   readonly maxProfiles = this.profiles.maxProfiles;
   readonly voices = this.audio.voices;
+  readonly voicesFr = this.audio.voicesFr;
+  /** Les deux sections « Voix » (anglais / français), affichées en miroir. */
+  readonly voiceSections: { lang: SpeechLang; title: string; word: string }[] = [
+    { lang: 'en', title: '🇬🇧 Anglais', word: "l'anglais" },
+    { lang: 'fr', title: '🇫🇷 Français', word: 'le français' },
+  ];
   readonly themes = THEMES;
   readonly appVersion = APP_VERSION;
   readonly changelog = CHANGELOG;
@@ -841,8 +863,8 @@ export class Admin {
   readonly child = signal(this.children()[0]?.id ?? '');
   readonly pinSaved = signal(false);
   readonly pinError = signal(false);
-  /** Liste de voix personnalisée ouverte (remplace le `<select>` natif qui débordait sous Chrome). */
-  readonly voiceOpen = signal(false);
+  /** Langue dont la liste de voix est ouverte ('' = aucune). Remplace le `<select>` natif. */
+  readonly voiceMenu = signal<SpeechLang | ''>('');
   /** Incrémenté après une réinitialisation pour recalculer la liste des thèmes réinitialisables. */
   private readonly resetTick = signal(0);
 
@@ -947,29 +969,40 @@ export class Admin {
     this.settings.setModeEnabled(this.child(), mode, (ev.target as HTMLInputElement).checked);
   }
 
-  setRate(ev: Event): void {
-    this.settings.setRate(this.child(), Number((ev.target as HTMLInputElement).value));
+  setRate(ev: Event, lang: SpeechLang): void {
+    this.settings.setRate(this.child(), Number((ev.target as HTMLInputElement).value), lang);
   }
 
-  /** Libellé de la voix actuellement sélectionnée pour l'enfant courant. */
-  currentVoiceLabel(): string {
-    const uri = this.settings.voiceFor(this.child());
+  /** Voix disponibles pour la langue donnée. */
+  voicesFor(lang: SpeechLang) {
+    return lang === 'fr' ? this.voicesFr() : this.voices();
+  }
+
+  toggleVoiceMenu(lang: SpeechLang): void {
+    this.voiceMenu.update((cur) => (cur === lang ? '' : lang));
+  }
+
+  /** Libellé de la voix sélectionnée pour l'enfant courant dans la langue donnée. */
+  currentVoiceLabel(lang: SpeechLang): string {
+    const uri = this.settings.voiceFor(this.child(), lang);
     if (!uri) return 'Voix par défaut';
-    return this.voices().find((v) => v.uri === uri)?.label ?? 'Voix par défaut';
+    return this.voicesFor(lang).find((v) => v.uri === uri)?.label ?? 'Voix par défaut';
   }
 
-  selectVoice(uri: string): void {
-    this.settings.setVoice(this.child(), uri);
-    this.voiceOpen.set(false);
+  selectVoice(uri: string, lang: SpeechLang): void {
+    this.settings.setVoice(this.child(), uri, lang);
+    this.voiceMenu.set('');
   }
 
-  testVoice(): void {
-    this.audio.speak(
-      'Hello! Cat, dog, sun.',
-      this.settings.rateFor(this.child()) / 100,
-      'en-US',
-      this.settings.voiceFor(this.child()),
-    );
+  testVoice(lang: SpeechLang): void {
+    const id = this.child();
+    const rate = this.settings.rateFor(id, lang) / 100;
+    const uri = this.settings.voiceFor(id, lang);
+    if (lang === 'fr') {
+      this.audio.speak('Bonjour ! Chat, chien, soleil.', rate, 'fr-FR', uri);
+    } else {
+      this.audio.speak('Hello! Cat, dog, sun.', rate, 'en-US', uri);
+    }
   }
 
   resetAll(): void {

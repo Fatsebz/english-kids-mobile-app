@@ -30,6 +30,7 @@ import { INSTRUMENTS } from './instruments.data';
 import { TIMEUNITS } from './time.data';
 import { GAMES } from './games.data';
 import { ROOMS } from './rooms.data';
+import { DIRECTIONS } from './directions.data';
 
 /** Décrit un module d'apprentissage illustré par des emojis (piloté par les données). */
 export interface LearnModule {
@@ -306,6 +307,14 @@ export const MODULES: LearnModule[] = [
     tileEmoji: '🛋️',
     gradient: 'linear-gradient(150deg, #2ec27e, #ff6fae)',
     items: ROOMS,
+  },
+  {
+    id: 'directions',
+    title: 'Directions',
+    fr: 'Les directions',
+    tileEmoji: '🧭',
+    gradient: 'linear-gradient(150deg, #4dabf7, #2ec27e)',
+    items: DIRECTIONS,
   },
   {
     id: 'timeunits',

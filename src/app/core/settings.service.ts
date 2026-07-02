@@ -5,6 +5,9 @@ import { THEMES, Theme } from '../data/themes';
 export type QuizMode = 'read' | 'listen';
 export const QUIZ_MODES: QuizMode[] = ['read', 'listen'];
 
+/** Langue de prononciation réglable indépendamment (voix + vitesse). */
+export type SpeechLang = 'en' | 'fr';
+
 interface ChildSettings {
   /**
    * Thèmes MASQUÉS (liste noire). Tout thème absent de cette liste est **affiché par défaut**,
@@ -12,10 +15,14 @@ interface ChildSettings {
    */
   hiddenThemes: string[];
   modes: QuizMode[];
-  /** Vitesse de la voix en % de la normale (50 à 100). */
+  /** Vitesse de la voix ANGLAISE en % de la normale (50 à 100). */
   rate: number;
-  /** Voix anglaise choisie (voiceURI). Vide = voix par défaut de l'appareil. */
+  /** Voix ANGLAISE choisie (voiceURI). Vide = voix par défaut de l'appareil. */
   voiceUri: string;
+  /** Vitesse de la voix FRANÇAISE en % de la normale (50 à 100). */
+  rateFr: number;
+  /** Voix FRANÇAISE choisie (voiceURI). Vide = voix par défaut de l'appareil. */
+  voiceUriFr: string;
 }
 
 const PIN_KEY = 'ek.adminPin';
@@ -47,13 +54,13 @@ export class SettingsService {
   isModeEnabled(id: string, mode: QuizMode): boolean {
     return this.get(id).modes.includes(mode);
   }
-  /** Vitesse de la voix (%) du profil. */
-  rateFor(id: string): number {
-    return this.get(id).rate;
+  /** Vitesse de la voix (%) du profil, pour la langue donnée (défaut anglais). */
+  rateFor(id: string, lang: SpeechLang = 'en'): number {
+    return lang === 'fr' ? this.get(id).rateFr : this.get(id).rate;
   }
-  /** Voix anglaise choisie pour le profil (voiceURI ; vide = défaut). */
-  voiceFor(id: string): string {
-    return this.get(id).voiceUri;
+  /** Voix choisie pour le profil dans la langue donnée (voiceURI ; vide = défaut). */
+  voiceFor(id: string, lang: SpeechLang = 'en'): string {
+    return lang === 'fr' ? this.get(id).voiceUriFr : this.get(id).voiceUri;
   }
 
   /**
@@ -90,11 +97,13 @@ export class SettingsService {
     if (modes.length === 0) modes = [mode];
     this.save(id, { ...cur, modes });
   }
-  setRate(id: string, percent: number): void {
-    this.save(id, { ...this.get(id), rate: clampRate(percent) });
+  setRate(id: string, percent: number, lang: SpeechLang = 'en'): void {
+    const key = lang === 'fr' ? 'rateFr' : 'rate';
+    this.save(id, { ...this.get(id), [key]: clampRate(percent) });
   }
-  setVoice(id: string, voiceUri: string): void {
-    this.save(id, { ...this.get(id), voiceUri });
+  setVoice(id: string, voiceUri: string, lang: SpeechLang = 'en'): void {
+    const key = lang === 'fr' ? 'voiceUriFr' : 'voiceUri';
+    this.save(id, { ...this.get(id), [key]: voiceUri });
   }
 
   /** Supprime les réglages d'un profil (à la suppression du profil). */
@@ -157,19 +166,30 @@ export class SettingsService {
       const raw = localStorage.getItem(this.key(id));
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<ChildSettings> & { themes?: string[] };
+        const rate = parsed.rate ? clampRate(parsed.rate) : DEFAULT_RATE;
         return {
           // Ancien format (liste blanche `themes`) → on repart de « rien masqué »
           // pour que tous les thèmes (existants et nouveaux) soient visibles par défaut.
           hiddenThemes: Array.isArray(parsed.hiddenThemes) ? parsed.hiddenThemes : [],
           modes: parsed.modes?.length ? parsed.modes : [...QUIZ_MODES],
-          rate: parsed.rate ? clampRate(parsed.rate) : DEFAULT_RATE,
+          rate,
           voiceUri: typeof parsed.voiceUri === 'string' ? parsed.voiceUri : '',
+          // Français : valeurs propres si présentes, sinon on reprend la vitesse anglaise existante.
+          rateFr: parsed.rateFr ? clampRate(parsed.rateFr) : rate,
+          voiceUriFr: typeof parsed.voiceUriFr === 'string' ? parsed.voiceUriFr : '',
         };
       }
     } catch {
       /* ignore */
     }
-    return { hiddenThemes: [], modes: [...QUIZ_MODES], rate: DEFAULT_RATE, voiceUri: '' };
+    return {
+      hiddenThemes: [],
+      modes: [...QUIZ_MODES],
+      rate: DEFAULT_RATE,
+      voiceUri: '',
+      rateFr: DEFAULT_RATE,
+      voiceUriFr: '',
+    };
   }
 
   private save(id: string, value: ChildSettings): void {

@@ -24,7 +24,7 @@ export const GROUPS: ThemeGroup[] = [
     fr: 'Les concepts',
     tileEmoji: '🔢',
     gradient: 'linear-gradient(150deg, #ff6b6b, #8e44ad)',
-    themeIds: ['numbers', 'letters', 'shapes', 'colors'],
+    themeIds: ['numbers', 'letters', 'shapes', 'colors', 'directions'],
   },
   {
     id: 'time',

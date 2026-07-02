@@ -6,7 +6,7 @@
  * APP_VERSION, puis aligner `android/app/build.gradle` (versionName = APP_VERSION,
  * incrémenter versionCode) et `package.json`.
  */
-export const APP_VERSION = '1.3.0';
+export const APP_VERSION = '1.3.1';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,18 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.3.1',
+    date: '2026-07-02',
+    changes: [
+      'Nouveau thème Directions 🧭 (haut, bas, gauche, droite, sur, sous, dans, dehors…) dans les Concepts',
+      'Réglages > Voix : choix de la voix ET de la vitesse séparément pour l’anglais 🇬🇧 et le français 🇫🇷',
+      'Prononciation française plus rapide : on privilégie une voix installée sur l’appareil',
+      'Choix des voix : seules les voix réellement installées sont proposées, avec des noms distincts',
+      'Correction : les confettis restaient parfois figés à l’écran et ne disparaissaient plus',
+      'Écran « Qui joue ? » : les profils sont affichés les uns au-dessus des autres',
+    ],
+  },
   {
     version: '1.3.0',
     date: '2026-06-29',

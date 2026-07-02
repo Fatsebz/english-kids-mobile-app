@@ -1,5 +1,5 @@
-import { Component, output, signal } from '@angular/core';
-import confetti from 'canvas-confetti';
+import { Component, ElementRef, OnDestroy, output, signal, viewChild } from '@angular/core';
+import confetti, { CreateTypes } from 'canvas-confetti';
 
 const PRAISE = ['Bravo !', 'Super !', 'Great!', 'Yes!', 'Génial !', 'Yeah!'];
 
@@ -20,6 +20,7 @@ export interface CelebrateOptions {
 @Component({
   selector: 'app-celebration',
   template: `
+    <canvas #fx class="fx"></canvas>
     @if (visible()) {
       <div class="celebrate" (click)="$event.stopPropagation()">
         <div class="burst anim-pop">
@@ -31,6 +32,14 @@ export interface CelebrateOptions {
   `,
   styles: [
     `
+      .fx {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 60;
+        pointer-events: none;
+      }
       .celebrate {
         position: fixed;
         inset: 0;
@@ -57,13 +66,32 @@ export interface CelebrateOptions {
     `,
   ],
 })
-export class Celebration {
+export class Celebration implements OnDestroy {
   readonly done = output<void>();
   readonly visible = signal(false);
   readonly message = signal(PRAISE[0]);
   readonly icon = signal('⭐');
 
+  private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('fx');
+
   private timer: ReturnType<typeof setTimeout> | null = null;
+  private fx: CreateTypes | null = null;
+
+  ngOnDestroy(): void {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    // Nettoie tout confetti restant quand on quitte l'écran (le canvas ne « bave » plus).
+    this.fx?.reset();
+  }
+
+  /** Instance confetti liée à NOTRE canvas, animée dans un Web Worker (ne gèle plus si le thread bloque). */
+  private ensureFx(): CreateTypes {
+    if (!this.fx) {
+      this.fx = confetti.create(this.canvas().nativeElement, { resize: true, useWorker: true });
+    }
+    return this.fx;
+  }
 
   play(opts?: CelebrateOptions): void {
     this.icon.set(opts?.icon ?? '⭐');
@@ -87,13 +115,14 @@ export class Celebration {
   }
 
   private fireConfetti(big: boolean): void {
-    const base = { spread: 70, startVelocity: 45, ticks: 120, zIndex: 60 };
-    confetti({ ...base, particleCount: big ? 140 : 80, origin: { x: 0.5, y: 0.7 } });
-    confetti({ ...base, particleCount: 50, angle: 60, origin: { x: 0, y: 0.8 } });
-    confetti({ ...base, particleCount: 50, angle: 120, origin: { x: 1, y: 0.8 } });
+    const fx = this.ensureFx();
+    const base = { spread: 70, startVelocity: 45, ticks: 120 };
+    fx({ ...base, particleCount: big ? 140 : 80, origin: { x: 0.5, y: 0.7 } });
+    fx({ ...base, particleCount: 50, angle: 60, origin: { x: 0, y: 0.8 } });
+    fx({ ...base, particleCount: 50, angle: 120, origin: { x: 1, y: 0.8 } });
     if (big) {
       setTimeout(() => {
-        confetti({ ...base, particleCount: 80, origin: { x: 0.5, y: 0.6 } });
+        fx({ ...base, particleCount: 80, origin: { x: 0.5, y: 0.6 } });
       }, 350);
     }
   }
