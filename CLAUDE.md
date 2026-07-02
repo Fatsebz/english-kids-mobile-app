@@ -190,26 +190,43 @@ l'URL (`/m/:id`), résout le module via `findModule(id)` (dans `data/modules.ts`
 ---
 
 ## Icône & splash screen
-L'**icône = logo English Kidz centré sur fond bleu uni #6a8dff** (haut du dégradé du thème, derrière le logo ; source `public/englishkidz.webp`
-recomposée en carré 1024² par `resources/_gen-icon.mjs`). Ce même script génère aussi les **favicons /
-icônes web** dans `public/` (`favicon-16/32.png`, `apple-touch-icon.png`, `icon-192/512.png`) — retirées
-de l'APK au build (voir `strip-pwa`). Les ressources Android sont générées avec **`@capacitor/assets`** :
+L'**icône = illustration carrée PLEIN CADRE** (drapeau UK + deux mascottes, bord à bord ;
+source `resources/english_kidz_1024.png`, 1024²). Elle est utilisée **telle quelle** (plus de « logo
+centré sur bleu »). Deux scripts pilotent la génération :
+
+- `resources/_gen-app-icon.mjs` → sources `@capacitor/assets` (`icon-only`, `icon-background`,
+  `icon-foreground`) **et** les **favicons / icônes web** dans `public/` (`favicon-16/32.png`,
+  `apple-touch-icon.png`, `icon-192/512.png`) — ces dernières retirées de l'APK au build (`strip-pwa`).
+- `resources/_gen-android-launcher.mjs` → écrit **directement** les icônes de lanceur Android nettes,
+  en plein cadre (voir plus bas). À lancer **après** `@capacitor/assets`.
 
 | Fichier source (`resources/`) | Rôle |
 |------|------|
-| `icon-only.png` | icône legacy (logo sur bleu, carré plein) |
-| `icon-foreground.png` | premier plan adaptatif (logo ~72 %, fond transparent) |
-| `icon-background.png` | fond adaptatif (bleu uni #6a8dff) |
+| `english_kidz_1024.png` | **source unique de l'icône** (illustration plein cadre) |
+| `icon-only.png` | icône legacy (= illustration) |
+| `icon-foreground.png` | premier plan adaptatif (**transparent** : tout le visuel est dans le fond) |
+| `icon-background.png` | fond adaptatif (= illustration, plein cadre) |
 | `splash.png`, `splash-dark.png` | **bleu uni** (plus d'illustration plein écran) |
 
-Régénérer les sources d'icône (logo sur bleu) puis les ressources Android :
+> **Icône adaptative en plein cadre & nette** : `@capacitor/assets` 3.0.5 génère les calques adaptatifs
+> à la résolution *legacy* (48 px en mdpi) + un inset 16,7 % → un plein-cadre serait **flou** et laisserait
+> des coins transparents. D'où `_gen-android-launcher.mjs` : il réécrit les `mipmap-*/ic_launcher*` à leur
+> **vraie taille** (108 dp : 108→432 px), met le drapeau **bord à bord** (`background` = illustration,
+> `foreground` = transparent) et réécrit les `mipmap-anydpi-v26/ic_launcher*.xml` **sans inset**. Le masque
+> système (cercle/rond) rogne les coins ; les mascottes centrées restent visibles.
+
+Régénérer l'icône (Android + web) :
 ```powershell
-# 1) (re)générer les sources carrées (logo centré sur bleu) depuis public/englishkidz.webp :
-node resources/_gen-icon.mjs
-# 2) générer les ressources Android :
+# 1) sources @capacitor/assets + icônes web, depuis resources/english_kidz_1024.png :
+node resources/_gen-app-icon.mjs
+# 2) ressources Android (icônes + splash) — RECRÉE le splash plein écran, à nettoyer après :
 npx @capacitor/assets generate --android --assetPath resources `
   --iconBackgroundColor "#6a8dff" --iconBackgroundColorDark "#455ca6" `
   --splashBackgroundColor "#6a8dff" --splashBackgroundColorDark "#455ca6"
+# 3) supprimer les splash plein écran recréés (garde l'APK allégé) :
+git clean -fd android/app/src/main/res
+# 4) icônes de lanceur nettes en plein cadre (écrase la sortie basse résolution de @capacitor/assets) :
+node resources/_gen-android-launcher.mjs
 ```
 > **Plus de splash plein écran** (gain APK ~10 Mo) : tous les `drawable*/splash.png` sont supprimés et le
 > thème de lancement `AppTheme.NoActionBarLaunch` (`res/values/styles.xml`) utilise un **fond bleu uni**

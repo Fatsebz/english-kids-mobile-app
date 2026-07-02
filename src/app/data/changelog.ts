@@ -6,7 +6,7 @@
  * APP_VERSION, puis aligner `android/app/build.gradle` (versionName = APP_VERSION,
  * incrémenter versionCode) et `package.json`.
  */
-export const APP_VERSION = '1.3.1';
+export const APP_VERSION = '1.3.2';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,13 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.3.2',
+    date: '2026-07-02',
+    changes: [
+      'Nouvelle icône de l’application 🇬🇧 (illustration plein cadre)',
+    ],
+  },
   {
     version: '1.3.1',
     date: '2026-07-02',
