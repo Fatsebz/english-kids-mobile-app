@@ -25,14 +25,27 @@ const DENSITIES = {
   xxxhdpi: { legacy: 192, adaptive: 432 },
 };
 
+// Zone de sécurité des icônes adaptatives : ~2/3 du canevas seulement est garanti visible (le système
+// masque en cercle/rond et rogne le tiers extérieur). L'illustration est donc réduite à SAFE du canevas
+// et centrée ; le bord (rogné) est comblé par une COPIE FLOUE du même drapeau → le drapeau atteint quand
+// même les bords (pas de trou ni de liseré), et les mascottes restent entières.
+const SAFE = 0.8;
+
 const square = (size) => sharp(SRC).resize(size, size).png().toBuffer();
 
-const circleMasked = async (size) => {
-  const base = await square(size);
+// Illustration réduite (SAFE) centrée sur un fond = drapeau flouté plein cadre.
+const composed = async (size) => {
+  const inner = Math.round(size * SAFE);
+  const bg = await sharp(SRC).resize(size, size, { fit: 'cover' }).blur(Math.max(1, size / 18)).toBuffer();
+  const fg = await sharp(SRC).resize(inner, inner).toBuffer();
+  return sharp(bg).composite([{ input: fg, gravity: 'center' }]).png().toBuffer();
+};
+
+const circleMasked = async (buf, size) => {
   const mask = Buffer.from(
     `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#fff"/></svg>`,
   );
-  return sharp(base).composite([{ input: mask, blend: 'dest-in' }]).png().toBuffer();
+  return sharp(buf).composite([{ input: mask, blend: 'dest-in' }]).png().toBuffer();
 };
 
 const transparent = (size) =>
@@ -42,9 +55,11 @@ const transparent = (size) =>
 
 for (const [d, { legacy, adaptive }] of Object.entries(DENSITIES)) {
   const dir = `${RES}/mipmap-${d}`;
+  // Icône legacy carrée (Android < 8, non masquée) : illustration plein cadre nette.
   await sharp(await square(legacy)).toFile(`${dir}/ic_launcher.png`);
-  await sharp(await circleMasked(legacy)).toFile(`${dir}/ic_launcher_round.png`);
-  await sharp(await square(adaptive)).toFile(`${dir}/ic_launcher_background.png`); // plein cadre
+  // Icône ronde + fond adaptatif : version réduite (mascottes entières après masque).
+  await sharp(await circleMasked(await composed(legacy), legacy)).toFile(`${dir}/ic_launcher_round.png`);
+  await sharp(await composed(adaptive)).toFile(`${dir}/ic_launcher_background.png`);
   await sharp(await transparent(adaptive)).toFile(`${dir}/ic_launcher_foreground.png`);
   console.log('écrit', dir, `(legacy ${legacy}, adaptive ${adaptive})`);
 }

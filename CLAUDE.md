@@ -208,12 +208,15 @@ centré sur bleu »). Deux scripts pilotent la génération :
 | `icon-background.png` | fond adaptatif (= illustration, plein cadre) |
 | `splash.png`, `splash-dark.png` | **bleu uni** (plus d'illustration plein écran) |
 
-> **Icône adaptative en plein cadre & nette** : `@capacitor/assets` 3.0.5 génère les calques adaptatifs
-> à la résolution *legacy* (48 px en mdpi) + un inset 16,7 % → un plein-cadre serait **flou** et laisserait
-> des coins transparents. D'où `_gen-android-launcher.mjs` : il réécrit les `mipmap-*/ic_launcher*` à leur
-> **vraie taille** (108 dp : 108→432 px), met le drapeau **bord à bord** (`background` = illustration,
-> `foreground` = transparent) et réécrit les `mipmap-anydpi-v26/ic_launcher*.xml` **sans inset**. Le masque
-> système (cercle/rond) rogne les coins ; les mascottes centrées restent visibles.
+> **Icône adaptative nette, mascottes entières** : `@capacitor/assets` 3.0.5 génère les calques adaptatifs
+> à la résolution *legacy* (48 px en mdpi) + un inset 16,7 % → un rendu **flou**. D'où
+> `_gen-android-launcher.mjs` : il réécrit les `mipmap-*/ic_launcher*` à leur **vraie taille**
+> (108 dp : 108→432 px) et les `mipmap-anydpi-v26/ic_launcher*.xml` **sans inset**.
+> Les icônes adaptatives ne montrent que le **tiers central** (masque cercle/rond du système) : mettre
+> l'illustration bord à bord **rognait la tête des mascottes**. Le script réduit donc l'illustration à
+> `SAFE` (~80 %) du canevas, centrée, et comble le bord par une **copie floutée** du drapeau (le drapeau
+> atteint quand même les bords, sans trou ni liseré). `background` = ce composite, `foreground` = transparent.
+> L'icône **legacy carrée** (`ic_launcher.png`, Android < 8, non masquée) reste l'illustration plein cadre nette.
 
 Régénérer l'icône (Android + web) :
 ```powershell
