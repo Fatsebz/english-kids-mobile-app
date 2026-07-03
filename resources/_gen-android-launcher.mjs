@@ -30,15 +30,20 @@ const DENSITIES = {
 // et centrée ; le bord (rogné) est comblé par une COPIE FLOUE du même drapeau → le drapeau atteint quand
 // même les bords (pas de trou ni de liseré), et les mascottes restent entières.
 const SAFE = 0.8;
+// Les mascottes sont plus longues vers le bas (pieds) : on décale l'illustration vers le HAUT
+// (fraction du canevas) pour que les pieds entrent dans le cercle sans rogner les têtes.
+const SHIFT_UP = 0.06;
 
 const square = (size) => sharp(SRC).resize(size, size).png().toBuffer();
 
-// Illustration réduite (SAFE) centrée sur un fond = drapeau flouté plein cadre.
+// Illustration réduite (SAFE), décalée vers le haut, sur un fond = drapeau flouté plein cadre.
 const composed = async (size) => {
   const inner = Math.round(size * SAFE);
+  const left = Math.round((size - inner) / 2);
+  const top = Math.round((size - inner) / 2 - size * SHIFT_UP);
   const bg = await sharp(SRC).resize(size, size, { fit: 'cover' }).blur(Math.max(1, size / 18)).toBuffer();
   const fg = await sharp(SRC).resize(inner, inner).toBuffer();
-  return sharp(bg).composite([{ input: fg, gravity: 'center' }]).png().toBuffer();
+  return sharp(bg).composite([{ input: fg, top, left }]).png().toBuffer();
 };
 
 const circleMasked = async (buf, size) => {
