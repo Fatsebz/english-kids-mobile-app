@@ -22,6 +22,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-07-02',
     changes: [
       'Nouvelle icône de l’application 🇬🇧 (illustration plein cadre)',
+      'Bandeau du haut : le drapeau est aligné avec l’avatar et le prénom',
     ],
   },
   {

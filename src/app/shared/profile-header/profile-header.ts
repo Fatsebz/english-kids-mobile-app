@@ -55,7 +55,9 @@ import { UkFlag } from '../uk-flag/uk-flag';
       .flag {
         position: absolute;
         left: 50%;
-        top: 50%;
+        /* Centré dans la zone de CONTENU (56px sous le safe-area), comme l'avatar/prénom.
+           Sans le safe-area, 'top: 50%' remontait le drapeau au-dessus de la ligne sur mobile. */
+        top: calc(env(safe-area-inset-top) + 28px);
         transform: translate(-50%, -50%);
         width: 46px;
         aspect-ratio: 2 / 1;
